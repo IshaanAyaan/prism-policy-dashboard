@@ -1,0 +1,38 @@
+[
+  {
+    "metric": "mechanism_macro_f1",
+    "value": 0.962218,
+    "display": "0.962",
+    "note": "Selected benchmark model on the audited mechanism dataset."
+  },
+  {
+    "metric": "best_crash_model",
+    "value": "RandomForestRegressor",
+    "display": "RandomForestRegressor",
+    "note": "Lowest held-out test RMSE on the crash task."
+  },
+  {
+    "metric": "best_crash_rmse",
+    "value": 0.862583,
+    "display": "0.863",
+    "note": "Held-out crash forecasting error."
+  },
+  {
+    "metric": "best_crash_r2",
+    "value": 0.454379,
+    "display": "0.454",
+    "note": "Held-out crash forecasting fit."
+  },
+  {
+    "metric": "causal_avg_post_coef",
+    "value": -0.37865,
+    "display": "-0.379",
+    "note": "Average post-event coefficient for impaired fatality rate."
+  },
+  {
+    "metric": "causal_pretrend_p",
+    "value": 0.095119,
+    "display": "0.095",
+    "note": "Pretrend diagnostic for the primary causal audit."
+  }
+]

@@ -1,0 +1,512 @@
+[
+  {
+    "state_abbrev": "AK",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.241695273917695,
+    "forecast_scenario": 2.216072518628617,
+    "delta": -0.025622755289078203,
+    "forecast_interval_low": -0.5045429989614707,
+    "forecast_interval_high": 4.936688036218705
+  },
+  {
+    "state_abbrev": "AL",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 7.3762451649114595,
+    "forecast_scenario": 7.361378470103455,
+    "delta": -0.01486669480800451,
+    "forecast_interval_low": 4.640762952513367,
+    "forecast_interval_high": 10.081993987693544
+  },
+  {
+    "state_abbrev": "AR",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 4.2161461531749564,
+    "forecast_scenario": 4.1469533047961,
+    "delta": -0.0691928483788562,
+    "forecast_interval_low": 1.4263377872060126,
+    "forecast_interval_high": 6.867568822386188
+  },
+  {
+    "state_abbrev": "AZ",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 1.8624474300970133,
+    "forecast_scenario": 2.399909811359509,
+    "delta": 0.5374623812624957,
+    "forecast_interval_low": -0.3207057062305787,
+    "forecast_interval_high": 5.120525328949597
+  },
+  {
+    "state_abbrev": "CA",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.271358356074479,
+    "forecast_scenario": 2.1088198965350395,
+    "delta": -0.16253845953943946,
+    "forecast_interval_low": -0.6117956210550481,
+    "forecast_interval_high": 4.829435414125127
+  },
+  {
+    "state_abbrev": "CO",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.1115904983617964,
+    "forecast_scenario": 2.708602509298865,
+    "delta": 0.5970120109370685,
+    "forecast_interval_low": -0.01201300829122287,
+    "forecast_interval_high": 5.429218026888952
+  },
+  {
+    "state_abbrev": "CT",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.4411074932046444,
+    "forecast_scenario": 2.342964367470145,
+    "delta": -0.09814312573449957,
+    "forecast_interval_low": -0.3776511501199429,
+    "forecast_interval_high": 5.063579885060232
+  },
+  {
+    "state_abbrev": "DC",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 1.3314793319294163,
+    "forecast_scenario": 1.6311461751921366,
+    "delta": 0.2996668432627203,
+    "forecast_interval_low": -1.0894693423979511,
+    "forecast_interval_high": 4.351761692782224
+  },
+  {
+    "state_abbrev": "DE",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.5293303649841787,
+    "forecast_scenario": 2.4467405528638264,
+    "delta": -0.08258981212035232,
+    "forecast_interval_low": -0.27387496472626127,
+    "forecast_interval_high": 5.1673560704539145
+  },
+  {
+    "state_abbrev": "FL",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.42639355259478,
+    "forecast_scenario": 2.3785060566696252,
+    "delta": -0.047887495925154955,
+    "forecast_interval_low": -0.34210946092046246,
+    "forecast_interval_high": 5.099121574259713
+  },
+  {
+    "state_abbrev": "GA",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.500388048181293,
+    "forecast_scenario": 2.480025551805255,
+    "delta": -0.020362496376037598,
+    "forecast_interval_low": -0.2405899657848325,
+    "forecast_interval_high": 5.200641069395343
+  },
+  {
+    "state_abbrev": "HI",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.2937257594152065,
+    "forecast_scenario": 2.3411473559523936,
+    "delta": 0.04742159653718714,
+    "forecast_interval_low": -0.37946816163769403,
+    "forecast_interval_high": 5.061762873542481
+  },
+  {
+    "state_abbrev": "IA",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.7594823143468363,
+    "forecast_scenario": 2.482096555040011,
+    "delta": -0.2773857593068252,
+    "forecast_interval_low": -0.23851896255007654,
+    "forecast_interval_high": 5.202712072630099
+  },
+  {
+    "state_abbrev": "ID",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 1.5411387899637408,
+    "forecast_scenario": 2.2326366513767772,
+    "delta": 0.6914978614130365,
+    "forecast_interval_low": -0.48797886621331044,
+    "forecast_interval_high": 4.9532521689668645
+  },
+  {
+    "state_abbrev": "IL",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.211900929829422,
+    "forecast_scenario": 2.2531661483486425,
+    "delta": 0.0412652185192206,
+    "forecast_interval_low": -0.4674493692414452,
+    "forecast_interval_high": 4.973781665938731
+  },
+  {
+    "state_abbrev": "IN",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.785653828958762,
+    "forecast_scenario": 3.382761267909511,
+    "delta": 0.5971074389507489,
+    "forecast_interval_low": 0.6621457503194232,
+    "forecast_interval_high": 6.103376785499599
+  },
+  {
+    "state_abbrev": "KS",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.61814219278816,
+    "forecast_scenario": 2.4396565640141215,
+    "delta": -0.1784856287740384,
+    "forecast_interval_low": -0.28095895357596623,
+    "forecast_interval_high": 5.160272081604209
+  },
+  {
+    "state_abbrev": "KY",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.0440179985246716,
+    "forecast_scenario": 2.189590254153569,
+    "delta": 0.1455722556288972,
+    "forecast_interval_low": -0.5310252634365189,
+    "forecast_interval_high": 4.910205771743657
+  },
+  {
+    "state_abbrev": "LA",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 3.0406956411924986,
+    "forecast_scenario": 3.0143972593028248,
+    "delta": -0.026298381889673816,
+    "forecast_interval_low": 0.2937817417127371,
+    "forecast_interval_high": 5.735012776892912
+  },
+  {
+    "state_abbrev": "MA",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 1.593261563331937,
+    "forecast_scenario": 2.382427983013611,
+    "delta": 0.7891664196816739,
+    "forecast_interval_low": -0.3381875345764769,
+    "forecast_interval_high": 5.1030435006036985
+  },
+  {
+    "state_abbrev": "MD",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.2177905250344807,
+    "forecast_scenario": 2.7536338266099465,
+    "delta": 0.5358433015754658,
+    "forecast_interval_low": 0.033018309019858805,
+    "forecast_interval_high": 5.474249344200034
+  },
+  {
+    "state_abbrev": "ME",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.263399314720665,
+    "forecast_scenario": 2.29268357481183,
+    "delta": 0.029284260091165137,
+    "forecast_interval_low": -0.42793194277825775,
+    "forecast_interval_high": 5.013299092401917
+  },
+  {
+    "state_abbrev": "MI",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.2467953616329144,
+    "forecast_scenario": 2.029923639216558,
+    "delta": -0.21687172241635633,
+    "forecast_interval_low": -0.6906918783735296,
+    "forecast_interval_high": 4.750539156806646
+  },
+  {
+    "state_abbrev": "MN",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 1.8077858666743376,
+    "forecast_scenario": 2.395294014175515,
+    "delta": 0.5875081475011772,
+    "forecast_interval_low": -0.3253215034145729,
+    "forecast_interval_high": 5.1159095317656025
+  },
+  {
+    "state_abbrev": "MO",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 4.771550156359833,
+    "forecast_scenario": 4.761662862180927,
+    "delta": -0.009887294178906103,
+    "forecast_interval_low": 2.0410473445908393,
+    "forecast_interval_high": 7.482278379771015
+  },
+  {
+    "state_abbrev": "MS",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 8.674033565555083,
+    "forecast_scenario": 8.591820105170695,
+    "delta": -0.08221346038438782,
+    "forecast_interval_low": 5.871204587580608,
+    "forecast_interval_high": 11.312435622760784
+  },
+  {
+    "state_abbrev": "MT",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.6494928445919244,
+    "forecast_scenario": 3.1011896343968393,
+    "delta": 0.4516967898049149,
+    "forecast_interval_low": 0.3805741168067516,
+    "forecast_interval_high": 5.821805151986927
+  },
+  {
+    "state_abbrev": "NC",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.4739985679915875,
+    "forecast_scenario": 2.5238459650712213,
+    "delta": 0.049847397079633815,
+    "forecast_interval_low": -0.1967695525188664,
+    "forecast_interval_high": 5.244461482661309
+  },
+  {
+    "state_abbrev": "ND",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 3.8702446683185463,
+    "forecast_scenario": 4.023953518904969,
+    "delta": 0.15370885058642303,
+    "forecast_interval_low": 1.3033380013148816,
+    "forecast_interval_high": 6.744569036495057
+  },
+  {
+    "state_abbrev": "NE",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.430952276019585,
+    "forecast_scenario": 2.4352211564872506,
+    "delta": 0.004268880467665603,
+    "forecast_interval_low": -0.2853943611028371,
+    "forecast_interval_high": 5.155836674077339
+  },
+  {
+    "state_abbrev": "NH",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.3410700384598147,
+    "forecast_scenario": 2.393326053869711,
+    "delta": 0.05225601540989633,
+    "forecast_interval_low": -0.3272894637203767,
+    "forecast_interval_high": 5.113941571459799
+  },
+  {
+    "state_abbrev": "NJ",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 1.733364336252786,
+    "forecast_scenario": 2.4577540421976853,
+    "delta": 0.7243897059448994,
+    "forecast_interval_low": -0.26286147539240234,
+    "forecast_interval_high": 5.1783695597877735
+  },
+  {
+    "state_abbrev": "NM",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 6.245440908959774,
+    "forecast_scenario": 6.188909568708042,
+    "delta": -0.05653134025173223,
+    "forecast_interval_low": 3.4682940511179545,
+    "forecast_interval_high": 8.90952508629813
+  },
+  {
+    "state_abbrev": "NV",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 1.515907502070556,
+    "forecast_scenario": 2.123928500289733,
+    "delta": 0.6080209982191771,
+    "forecast_interval_low": -0.5966870173003547,
+    "forecast_interval_high": 4.844544017879821
+  },
+  {
+    "state_abbrev": "NY",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 1.378154862040346,
+    "forecast_scenario": 1.8216758285001642,
+    "delta": 0.4435209664598181,
+    "forecast_interval_low": -0.8989396890899235,
+    "forecast_interval_high": 4.542291346090252
+  },
+  {
+    "state_abbrev": "OH",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.6768022021715,
+    "forecast_scenario": 2.4592290889757953,
+    "delta": -0.2175731131957046,
+    "forecast_interval_low": -0.2613864286142924,
+    "forecast_interval_high": 5.179844606565883
+  },
+  {
+    "state_abbrev": "OK",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.574501658035657,
+    "forecast_scenario": 2.5789888683336994,
+    "delta": 0.004487210298042665,
+    "forecast_interval_low": -0.14162664925638824,
+    "forecast_interval_high": 5.299604385923788
+  },
+  {
+    "state_abbrev": "OR",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 1.5585360679593152,
+    "forecast_scenario": 2.010657618109104,
+    "delta": 0.45212155014978883,
+    "forecast_interval_low": -0.7099578994809836,
+    "forecast_interval_high": 4.731273135699192
+  },
+  {
+    "state_abbrev": "PA",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 1.9934685126741536,
+    "forecast_scenario": 2.350065116504952,
+    "delta": 0.3565966038307986,
+    "forecast_interval_low": -0.3705504010851355,
+    "forecast_interval_high": 5.07068063409504
+  },
+  {
+    "state_abbrev": "RI",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.0033680955876703,
+    "forecast_scenario": 2.5969087258049237,
+    "delta": 0.5935406302172535,
+    "forecast_interval_low": -0.12370679178516397,
+    "forecast_interval_high": 5.317524243395011
+  },
+  {
+    "state_abbrev": "SC",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.714293534893747,
+    "forecast_scenario": 2.650870897017368,
+    "delta": -0.06342263787637892,
+    "forecast_interval_low": -0.06974462057271946,
+    "forecast_interval_high": 5.371486414607456
+  },
+  {
+    "state_abbrev": "SD",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.3703690695870483,
+    "forecast_scenario": 2.3215785789993673,
+    "delta": -0.048790490587681035,
+    "forecast_interval_low": -0.3990369385907204,
+    "forecast_interval_high": 5.042194096589455
+  },
+  {
+    "state_abbrev": "TN",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.6975770393928538,
+    "forecast_scenario": 2.6653804058751107,
+    "delta": -0.032196633517743045,
+    "forecast_interval_low": -0.05523511171497697,
+    "forecast_interval_high": 5.385995923465199
+  },
+  {
+    "state_abbrev": "TX",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.4411025609761916,
+    "forecast_scenario": 2.250876192317974,
+    "delta": -0.19022636865821774,
+    "forecast_interval_low": -0.4697393252721138,
+    "forecast_interval_high": 4.9714917099080616
+  },
+  {
+    "state_abbrev": "UT",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.321784099489237,
+    "forecast_scenario": 2.2808625811186833,
+    "delta": -0.04092151837055358,
+    "forecast_interval_low": -0.43975293647140434,
+    "forecast_interval_high": 5.0014780987087715
+  },
+  {
+    "state_abbrev": "VA",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.482877246560207,
+    "forecast_scenario": 2.3668898899451993,
+    "delta": -0.11598735661500781,
+    "forecast_interval_low": -0.35372562764488835,
+    "forecast_interval_high": 5.0875054075352875
+  },
+  {
+    "state_abbrev": "VT",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.507083261505966,
+    "forecast_scenario": 2.5679716486921165,
+    "delta": 0.06088838718615053,
+    "forecast_interval_low": -0.1526438688979712,
+    "forecast_interval_high": 5.288587166282204
+  },
+  {
+    "state_abbrev": "WA",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.273038078496447,
+    "forecast_scenario": 2.3105918454299705,
+    "delta": 0.03755376693352375,
+    "forecast_interval_low": -0.41002367216011715,
+    "forecast_interval_high": 5.031207363020059
+  },
+  {
+    "state_abbrev": "WI",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 2.1869540572873896,
+    "forecast_scenario": 1.988332184353275,
+    "delta": -0.19862187293411449,
+    "forecast_interval_low": -0.7322833332368126,
+    "forecast_interval_high": 4.708947701943362
+  },
+  {
+    "state_abbrev": "WV",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 3.040846627202788,
+    "forecast_scenario": 2.7575125198700348,
+    "delta": -0.2833341073327533,
+    "forecast_interval_low": 0.03689700227994708,
+    "forecast_interval_high": 5.478128037460122
+  },
+  {
+    "state_abbrev": "WY",
+    "year": 2023,
+    "scenario_name": "tax_plus_0.10_and_enforcement_plus1_v3",
+    "forecast_baseline": 7.27922135710269,
+    "forecast_scenario": 7.445512776948926,
+    "delta": 0.1662914198462362,
+    "forecast_interval_low": 4.724897259358839,
+    "forecast_interval_high": 10.166128294539014
+  }
+]

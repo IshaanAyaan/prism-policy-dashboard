@@ -1,0 +1,57 @@
+[
+  {
+    "week": 1,
+    "title": "Laws as Recipes",
+    "focus": "Framed alcohol statutes as combinations of price, access, and enforcement mechanisms rather than simple yes/no policy checkboxes."
+  },
+  {
+    "week": 2,
+    "title": "Panel Assembly",
+    "focus": "Merged APIS, FARS, FHWA, FRED, and YRBS into a state-year research panel with common state and year keys."
+  },
+  {
+    "week": 3,
+    "title": "Rates and Exposure",
+    "focus": "Moved beyond crash counts by using population-normalized and exposure-aware outcomes."
+  },
+  {
+    "week": 4,
+    "title": "Teen Data Humility",
+    "focus": "Identified sparse YRBS coverage, making teen drinking outcomes secondary rather than the primary evidence base."
+  },
+  {
+    "week": 5,
+    "title": "Text Becomes Signal",
+    "focus": "Turned policy language into mechanism features that forecasting models can use."
+  },
+  {
+    "week": 6,
+    "title": "Mechanism Split",
+    "focus": "Separated law text into price, access, and enforcement channels so policy changes can be interpreted."
+  },
+  {
+    "week": 7,
+    "title": "Forecasting Value",
+    "focus": "Showed that mechanism-aware text adds measurable signal compared with policy-only baselines."
+  },
+  {
+    "week": 8,
+    "title": "Enforcement Pattern",
+    "focus": "Found enforcement language was often the strongest interpretive signal, while avoiding causal overclaiming."
+  },
+  {
+    "week": 9,
+    "title": "Model Ladder",
+    "focus": "Compared forecasting models and selected Random Forest for next-year impaired-fatality prediction."
+  },
+  {
+    "week": 10,
+    "title": "Equations and Limits",
+    "focus": "Explained RMSE, MAE, R-squared, and why predictive accuracy is not the same as causal proof."
+  },
+  {
+    "week": 11,
+    "title": "Final Product Build",
+    "focus": "Turned the research package into a public, teacher-facing dashboard with simulations and transparent uncertainty."
+  }
+]
