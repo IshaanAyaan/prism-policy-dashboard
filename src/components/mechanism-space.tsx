@@ -40,8 +40,8 @@ function Point({
         <sphereGeometry args={[size, 32, 32]} />
         <meshStandardMaterial color={color} roughness={0.38} metalness={0.08} />
       </mesh>
-      <Html distanceFactor={8} position={[0.07, 0.07, 0]}>
-        <div className="rounded-sm border border-white/40 bg-white/90 px-2 py-1 text-[10px] font-semibold text-slate-900 shadow-sm">
+      <Html distanceFactor={14} position={[0.06, 0.06, 0]}>
+        <div className="origin-top-left scale-[0.45] whitespace-nowrap rounded-sm border border-white/40 bg-white/90 px-2 py-1 text-[10px] font-semibold text-slate-900 shadow-sm">
           {label}
         </div>
       </Html>
@@ -67,14 +67,14 @@ function Axis({
         <meshStandardMaterial color={color} />
       </mesh>
       <Html
-        distanceFactor={7}
+        distanceFactor={14}
         position={[
           position[0] + scale[0] / 2 + 0.06,
           position[1] + scale[1] / 2 + 0.06,
           position[2] + scale[2] / 2 + 0.06,
         ]}
       >
-        <div className="rounded-sm bg-slate-950/85 px-2 py-1 text-[10px] font-medium text-white">
+        <div className="origin-top-left scale-[0.38] whitespace-nowrap rounded-sm bg-slate-950/85 px-2 py-1 text-[10px] font-medium text-white">
           {label}
         </div>
       </Html>
@@ -132,7 +132,7 @@ export function MechanismSpace({
             size={0.055}
           />
           <Point
-            label="Analyzed law"
+            label="Law"
             scores={lawScores}
             color="#be3455"
             size={0.07}

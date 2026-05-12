@@ -649,12 +649,17 @@ export function PrismDashboard() {
               <CardHeader>
                 <CardTitle className="text-xl">Mechanism Result</CardTitle>
                 <CardDescription>
-                  The model output drives these bars and the red point in the
-                  3D view.
+                  These are model confidence scores for each mechanism, not
+                  estimates of how large the real-world policy effect would be.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-5">
                 <MechanismBars scores={lawScores} />
+                <p className="rounded-lg border bg-[#f8fbfa] p-3 text-sm leading-6 text-slate-600">
+                  A big dollar amount can still matter a lot in real policy
+                  terms. These percentages only show how strongly the model
+                  reads the text as price, access, or enforcement language.
+                </p>
                 <div className="grid gap-3">
                   {lawScore.ranked.map((entry) => (
                     <div

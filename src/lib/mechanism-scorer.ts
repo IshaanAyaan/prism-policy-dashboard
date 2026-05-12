@@ -32,7 +32,7 @@ type ZeroShotClassifier = (
 ) => Promise<ZeroShotOutput>;
 
 const MODEL_ID = "Xenova/mobilebert-uncased-mnli";
-const HYPOTHESIS_TEMPLATE = "This law primarily changes {} mechanisms.";
+const HYPOTHESIS_TEMPLATE = "This law is about {}.";
 
 const CANDIDATES: Array<{
   candidate: string;
@@ -43,19 +43,23 @@ const CANDIDATES: Array<{
   {
     key: "price",
     label: "Price",
-    candidate: "price",
+    candidate:
+      "alcohol taxes, excise taxes, per-gallon price, minimum price, or price floors",
     description: "taxes, excise rates, minimum pricing, fees, or discounts",
   },
   {
     key: "access",
     label: "Access",
-    candidate: "access",
-    description: "where, when, or how easily alcohol can be sold or obtained",
+    candidate:
+      "Sunday sales, store hours, grocery store sales, outlet density, or delivery access",
+    description:
+      "Sunday sales, store hours, grocery access, outlet density, or delivery",
   },
   {
     key: "enforcement",
     label: "Enforcement",
-    candidate: "enforcement",
+    candidate:
+      "penalties, compliance checks, ID checks, license suspension, or policing",
     description: "penalties, compliance checks, ID checks, or policing",
   },
 ];
@@ -88,23 +92,22 @@ export function buildLawScoreResult(
   raw: Array<{ label: string; score: number }>,
 ): LawScoreResult {
   const byLabel = new Map(raw.map((entry) => [entry.label, entry.score]));
-  const total = CANDIDATES.reduce(
-    (sum, candidate) => sum + Math.max(byLabel.get(candidate.candidate) ?? 0, 0),
-    0,
-  );
+
+  function lookupScore(candidate: (typeof CANDIDATES)[number]) {
+    return Math.max(
+      byLabel.get(candidate.candidate) ??
+        byLabel.get(candidate.key) ??
+        byLabel.get(candidate.label.toLowerCase()) ??
+        0,
+      0,
+    );
+  }
 
   const ranked = CANDIDATES.map((candidate) => ({
     key: candidate.key,
     label: candidate.label,
     description: candidate.description,
-    score:
-      total > 0
-        ? Number(
-            (
-              Math.max(byLabel.get(candidate.candidate) ?? 0, 0) / total
-            ).toFixed(4),
-          )
-        : 0,
+    score: Number(lookupScore(candidate).toFixed(4)),
   })).sort((left, right) => right.score - left.score);
 
   const scores = ranked.reduce(
@@ -121,14 +124,10 @@ export function buildLawScoreResult(
 
   const dominant = ranked[0]?.key ?? "price";
   const runnerUp = ranked[1];
-  const article =
-    ranked[0]?.label === "Access" || ranked[0]?.label === "Enforcement"
-      ? "an"
-      : "a";
   const summary =
     text.trim().length === 0
       ? "Type a law draft and click Analyze Law."
-      : `The local model reads this law mostly as ${article} ${ranked[0]?.label.toLowerCase()} change, with ${runnerUp?.label.toLowerCase()} as the secondary mechanism.`;
+      : `The local model sees the strongest ${ranked[0]?.label.toLowerCase()} signal here, with ${runnerUp?.label.toLowerCase()} as the secondary mechanism.`;
 
   return {
     dominant,
