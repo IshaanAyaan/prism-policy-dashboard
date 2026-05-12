@@ -132,7 +132,7 @@ export function MechanismSpace({
             size={0.055}
           />
           <Point
-            label="Law text"
+            label="Analyzed law"
             scores={lawScores}
             color="#be3455"
             size={0.07}

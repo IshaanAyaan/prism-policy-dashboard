@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { useEffect, useMemo, useState } from "react";
+import { startTransition, useEffect, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -21,16 +21,18 @@ import type { LucideIcon } from "lucide-react";
 import {
   ArrowUpRight,
   BookOpen,
+  Brain,
   Boxes,
   CircleHelp,
   ClipboardList,
+  Download,
   ExternalLink,
   FileChartColumn,
   FlaskConical,
   Gauge,
   GitBranch,
-  Landmark,
   LayoutDashboard,
+  LoaderCircle,
   RotateCcw,
   Scale,
   SlidersHorizontal,
@@ -76,7 +78,11 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { MechanismSpace } from "@/components/mechanism-space";
-import { scoreLawText } from "@/lib/mechanism-scorer";
+import {
+  classifyLawText,
+  emptyLawScoreResult,
+  type LawScoreResult,
+} from "@/lib/mechanism-scorer";
 import {
   BLOG_URL,
   COHORT_URL,
@@ -130,7 +136,12 @@ export function PrismDashboard() {
   const [beerTaxDelta, setBeerTaxDelta] = useState(0.1);
   const [accessShift, setAccessShift] = useState(0);
   const [enforcementShift, setEnforcementShift] = useState(1);
-  const [lawText, setLawText] = useState(DEFAULT_LAW);
+  const [lawDraft, setLawDraft] = useState(DEFAULT_LAW);
+  const [lawScore, setLawScore] = useState<LawScoreResult>(() =>
+    emptyLawScoreResult(DEFAULT_LAW),
+  );
+  const [isAnalyzingLaw, setIsAnalyzingLaw] = useState(false);
+  const [lawError, setLawError] = useState<string | null>(null);
 
   const selected = states.find((state) => state.abbrev === selectedState);
   const stateName = selected?.name ?? selectedState;
@@ -150,7 +161,6 @@ export function PrismDashboard() {
       }),
     [accessShift, beerTaxDelta, enforcementShift, selectedState],
   );
-  const lawScore = useMemo(() => scoreLawText(lawText), [lawText]);
   const scenarioVector = useMemo(
     () => contributionVector(scenario.contributions),
     [scenario.contributions],
@@ -170,10 +180,69 @@ export function PrismDashboard() {
   const selectedMechanismModel = mechanismModels[0];
   const lawScores = lawScore.scores;
 
+  async function handleLawAnalysis(text: string) {
+    const cleaned = text.trim();
+
+    if (!cleaned) {
+      setLawError("Enter law text before running the model.");
+      startTransition(() => setLawScore(emptyLawScoreResult()));
+      return;
+    }
+
+    setIsAnalyzingLaw(true);
+    setLawError(null);
+
+    try {
+      const nextScore = await classifyLawText(cleaned);
+
+      startTransition(() => setLawScore(nextScore));
+    } catch {
+      setLawError(
+        "The local model could not finish. Try again after the first download completes.",
+      );
+    } finally {
+      setIsAnalyzingLaw(false);
+    }
+  }
+
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => setMounted(true));
 
     return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function runInitialAnalysis() {
+      setIsAnalyzingLaw(true);
+
+      try {
+        const nextScore = await classifyLawText(DEFAULT_LAW);
+
+        if (cancelled) {
+          return;
+        }
+
+        startTransition(() => setLawScore(nextScore));
+      } catch {
+        if (!cancelled) {
+          setLawError(
+            "The local model did not load on first pass. You can try Analyze Law again.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setIsAnalyzingLaw(false);
+        }
+      }
+    }
+
+    void runInitialAnalysis();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -218,30 +287,21 @@ export function PrismDashboard() {
             </div>
           </div>
 
-          <div className="grid dashboard-grid gap-4">
+          <div className="grid gap-4 md:grid-cols-3">
             <MetricCard
               icon={Sparkles}
               label="Mechanism Macro-F1"
               value={headline.macroF1}
-              detail="Audited text benchmark"
             />
             <MetricCard
               icon={Gauge}
               label="Forecast RMSE"
               value={headline.rmse}
-              detail="Held-out crash model"
             />
             <MetricCard
               icon={GitBranch}
               label="Forecast R²"
               value={headline.r2}
-              detail="2020-2023 test years"
-            />
-            <MetricCard
-              icon={Landmark}
-              label="Causal post coef."
-              value={headline.causalPost}
-              detail={`Pretrend p=${headline.pretrendP}`}
             />
           </div>
 
@@ -532,24 +592,56 @@ export function PrismDashboard() {
           >
             <Card className="rounded-xl bg-white/94">
               <CardHeader>
-                <CardTitle className="text-xl">
-                  Deterministic Law Interpreter
-                </CardTitle>
+                <CardTitle className="text-xl">Law Interpreter</CardTitle>
                 <CardDescription>
-                  Type a hypothetical law. The scorer uses transparent keyword
-                  weights instead of a paid language-model API.
+                  Analyze a hypothetical law with a small local MobileBERT
+                  zero-shot model running in the browser.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <Textarea
-                  value={lawText}
-                  onChange={(event) => setLawText(event.target.value)}
+                  value={lawDraft}
+                  onChange={(event) => setLawDraft(event.target.value)}
+                  onKeyDown={(event) => {
+                    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
+                      event.preventDefault();
+                      void handleLawAnalysis(lawDraft);
+                    }
+                  }}
                   className="min-h-40 resize-none bg-white text-base leading-7"
                   aria-label="Hypothetical law text"
                 />
-                <p className="rounded-lg border bg-[#fbf6f4] p-3 text-sm leading-6 text-slate-700">
-                  {lawScore.summary}
-                </p>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="text-sm leading-6 text-slate-600">
+                    First run downloads the model into browser cache.
+                  </div>
+                  <Button
+                    onClick={() => void handleLawAnalysis(lawDraft)}
+                    disabled={isAnalyzingLaw}
+                    className="sm:min-w-40"
+                  >
+                    {isAnalyzingLaw ? (
+                      <>
+                        <LoaderCircle className="animate-spin" />
+                        Analyzing
+                      </>
+                    ) : (
+                      <>
+                        <Brain />
+                        Analyze Law
+                      </>
+                    )}
+                  </Button>
+                </div>
+                {lawError ? (
+                  <p className="rounded-lg border border-[#e9b4bf] bg-[#fff3f6] p-3 text-sm leading-6 text-[#8b203a]">
+                    {lawError}
+                  </p>
+                ) : (
+                  <p className="rounded-lg border bg-[#fbf6f4] p-3 text-sm leading-6 text-slate-700">
+                    {lawScore.summary}
+                  </p>
+                )}
               </CardContent>
             </Card>
 
@@ -557,77 +649,58 @@ export function PrismDashboard() {
               <CardHeader>
                 <CardTitle className="text-xl">Mechanism Result</CardTitle>
                 <CardDescription>
-                  Matched phrases and normalized mechanism scores.
+                  The model output drives these bars and the red point in the
+                  3D view.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-5">
                 <MechanismBars scores={lawScores} />
-                <div className="space-y-2">
-                  {(Object.keys(lawScores) as Array<keyof MechanismScores>).map(
-                    (key) => (
-                      <div
-                        key={key}
-                        className="flex flex-wrap items-center gap-2 text-sm"
-                      >
-                        <Badge variant="secondary">
-                          {mechanismLabels[key]}
-                        </Badge>
-                        <span className="text-slate-600">
-                          {lawScore.evidence[key].length
-                            ? lawScore.evidence[key].join(", ")
-                            : "No direct phrase matched"}
-                        </span>
+                <div className="grid gap-3">
+                  {lawScore.ranked.map((entry) => (
+                    <div
+                      key={entry.key}
+                      className="rounded-lg border bg-[#f8fbfa] p-3"
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <p className="font-medium text-slate-900">{entry.label}</p>
+                        <p className="text-sm tabular-nums text-slate-500">
+                          {axisPercent(entry.score)}
+                        </p>
                       </div>
-                    ),
-                  )}
+                      <p className="mt-1 text-sm leading-6 text-slate-600">
+                        {entry.description}
+                      </p>
+                    </div>
+                  ))}
                 </div>
+                <p className="rounded-lg border bg-white p-3 text-sm leading-6 text-slate-600">
+                  Model: <span className="font-medium text-slate-900">{lawScore.model}</span>
+                </p>
               </CardContent>
             </Card>
           </section>
 
-          <section id="space" className="grid gap-4 xl:grid-cols-[1fr_22rem]">
+          <section id="space">
             <Card className="rounded-xl bg-white/94">
               <CardHeader>
                 <CardTitle className="text-xl">
                   3D Price / Access / Enforcement Space
                 </CardTitle>
                 <CardDescription>
-                  The blue point is the selected state profile, the red point is
-                  the typed law, and the green point is the current scenario
-                  lever mix.
+                  Blue is the selected state profile, red is the analyzed law,
+                  and green is the current scenario lever mix.
                 </CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <MechanismSpace
                   stateName={selectedState}
                   stateScores={stateScores}
                   lawScores={lawScores}
                   scenarioVector={scenarioVector}
                 />
-              </CardContent>
-            </Card>
-
-            <Card className="rounded-xl bg-white/94">
-              <CardHeader>
-                <CardTitle className="text-xl">Interpretation Guardrails</CardTitle>
-                <CardDescription>
-                  How PRISM should be read during a presentation.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3 text-sm leading-6 text-slate-700">
                 <p>
-                  The dashboard makes policy text measurable, then forecasts risk
-                  from historical state-year patterns.
-                </p>
-                <p>
-                  A lower scenario forecast is not a promise that the law will
-                  cause that drop. It is a model response that should be checked
-                  against uncertainty, data coverage, and the causal audit.
-                </p>
-                <p>
-                  PRISM is strongest as a transparent evidence system: it shows
-                  mechanism signals, forecast movement, and limits in the same
-                  place.
+                  The red point updates only after you click Analyze Law, so the
+                  3D space stays tied to the model output instead of live typing.
                 </p>
               </CardContent>
             </Card>
@@ -791,17 +864,32 @@ export function PrismDashboard() {
 
           <section id="poster" className="grid gap-4 xl:grid-cols-[0.9fr_1.1fr]">
             <Card className="rounded-xl bg-white/94">
-              <CardHeader>
-                <CardTitle className="text-xl">AZSEF Poster Preview</CardTitle>
-                <CardDescription>
-                  Curated from the project poster artifact for presentation use.
-                </CardDescription>
+              <CardHeader className="gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div>
+                    <CardTitle className="text-xl">Poster Preview</CardTitle>
+                    <CardDescription>
+                      Curated from the project poster artifact for presentation use.
+                    </CardDescription>
+                  </div>
+                  <a
+                    className={cn(
+                      buttonVariants({ variant: "outline" }),
+                      "justify-start bg-white",
+                    )}
+                    href="/assets/azsef-poster-preview.jpg"
+                    download="prism-poster-preview.jpg"
+                  >
+                    <Download />
+                    Download Image
+                  </a>
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="overflow-hidden rounded-lg border bg-white">
                   <Image
                     src="/assets/azsef-poster-preview.jpg"
-                    alt="AZSEF poster preview for PRISM"
+                    alt="Poster preview for PRISM"
                     width={1800}
                     height={1350}
                     className="h-auto w-full"
@@ -964,7 +1052,11 @@ function SideRail() {
       </nav>
 
       <div className="mt-auto grid gap-2">
-        <HelpDrawer />
+        <HelpDrawer
+          className="justify-start border-transparent bg-[#dff4ee] text-slate-950 shadow-sm hover:bg-[#cae7df]"
+          labelClassName="text-slate-950"
+          variant="default"
+        />
         <a
           className={cn(
             buttonVariants({ variant: "secondary" }),
@@ -992,21 +1084,31 @@ function SideRail() {
   );
 }
 
-function HelpDrawer({ compact = false }: { compact?: boolean }) {
+function HelpDrawer({
+  compact = false,
+  className,
+  labelClassName,
+  variant,
+}: {
+  compact?: boolean;
+  className?: string;
+  labelClassName?: string;
+  variant?: "default" | "secondary" | "outline" | "ghost";
+}) {
   return (
     <Sheet>
       <SheetTrigger
         render={
           <Button
-            variant={compact ? "secondary" : "outline"}
+            variant={compact ? "secondary" : variant ?? "outline"}
             size={compact ? "icon" : "lg"}
             aria-label="Open PRISM help"
-            className={compact ? "" : "justify-start"}
+            className={cn(compact ? "" : "justify-start", className)}
           />
         }
       >
         <CircleHelp />
-        {!compact && <span>How to Try PRISM</span>}
+        {!compact && <span className={labelClassName}>How to Try PRISM</span>}
       </SheetTrigger>
       <SheetContent className="w-[min(92vw,34rem)] overflow-y-auto sm:max-w-xl">
         <SheetHeader>
@@ -1020,7 +1122,7 @@ function HelpDrawer({ compact = false }: { compact?: boolean }) {
             "Select a state from the forecast workspace.",
             "Adjust beer tax, Sunday-sales/access, and enforcement sliders.",
             "Compare the baseline forecast against the scenario forecast.",
-            "Type a hypothetical law into the deterministic law interpreter.",
+            "Type a hypothetical law and click Analyze Law.",
             "Read the price, access, and enforcement mechanism result.",
             "Treat every scenario as predictive evidence, not causal proof.",
           ].map((step, index) => (
@@ -1046,12 +1148,10 @@ function MetricCard({
   icon: Icon,
   label,
   value,
-  detail,
 }: {
   icon: LucideIcon;
   label: string;
   value: string;
-  detail: string;
 }) {
   return (
     <Card className="rounded-xl bg-white/94">
@@ -1064,7 +1164,6 @@ function MetricCard({
           <p className="text-2xl font-semibold tabular-nums text-slate-950">
             {value}
           </p>
-          <p className="text-xs text-slate-500">{detail}</p>
         </div>
       </CardContent>
     </Card>

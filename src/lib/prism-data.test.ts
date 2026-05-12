@@ -11,7 +11,7 @@ describe("PRISM scenario utilities", () => {
     expect(states.some((state) => state.abbrev === "AZ")).toBe(true);
   });
 
-  it("calculates a deterministic scenario from slider inputs", () => {
+  it("calculates a repeatable scenario from slider inputs", () => {
     const first = calculateScenario({
       state: "AZ",
       beerTaxDelta: 0.1,

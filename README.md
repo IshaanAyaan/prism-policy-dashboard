@@ -11,9 +11,9 @@ PRISM is a transparent alcohol-policy evidence system. It combines a 2003-2023 s
 - Select a state and inspect observed alcohol-impaired fatality trends.
 - Adjust beer-tax, access/Sunday-sales, and underage-purchase enforcement levers.
 - Compare baseline and scenario forecasts.
-- Type a hypothetical law and classify it into price, access, and enforcement mechanisms.
+- Type a hypothetical law and analyze it with a client-side MobileBERT zero-shot model.
 - Explore the same mechanism signals in a 3D price/access/enforcement space.
-- Review the SRP weekly research arc, AZSEF poster preview, model evidence, causal audit, and limitations.
+- Review the SRP weekly research arc, poster preview, model evidence, causal audit, and limitations.
 - Jump to the live Senior Project blog: [Ishaan R. - BASIS Senior Projects](https://basisseniorprojects.com/author/ishaan-r-2026/).
 
 ## Research Headline Metrics
@@ -36,7 +36,7 @@ The dashboard includes curated public assets from the PRISM research package:
 - `public/assets/scenario-deltas.png`
 - `public/assets/azsef-poster-preview.jpg`
 
-![AZSEF poster preview](public/assets/azsef-poster-preview.jpg)
+![Poster preview](public/assets/azsef-poster-preview.jpg)
 
 ## Data Sources
 
@@ -48,7 +48,7 @@ The public app uses curated lightweight artifacts generated from the local PRISM
 - FRED economic covariates
 - YRBS teen current-use and binge-drinking outcomes
 
-The app does not scrape the blog and does not require paid API keys. The law-text interpreter is deterministic and presentation-safe.
+The app does not scrape the blog and does not require paid API keys. The law-text interpreter uses a small client-side MobileBERT zero-shot model and remains presentation-safe.
 
 ## Local Development
 
@@ -67,7 +67,7 @@ npm run test
 npm run build
 ```
 
-The test suite covers deterministic scenario calculations and the transparent law-text mechanism scorer.
+The test suite covers scenario calculations and the local law-text scoring utilities.
 
 ## Vercel Deployment
 

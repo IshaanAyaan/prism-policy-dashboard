@@ -1,102 +1,182 @@
+import type { MechanismScores } from "@/lib/prism-data";
+
 export type MechanismKey = "price" | "access" | "enforcement";
 
-export type MechanismScore = {
+export type RankedMechanismScore = {
+  description: string;
   key: MechanismKey;
   label: string;
   score: number;
-  evidence: string[];
 };
 
 export type LawScoreResult = {
-  scores: Record<MechanismKey, number>;
   dominant: MechanismKey;
-  evidence: Record<MechanismKey, string[]>;
+  model: string;
+  ranked: RankedMechanismScore[];
+  scores: MechanismScores;
   summary: string;
 };
 
-const LEXICON: Record<MechanismKey, Array<{ pattern: RegExp; label: string; weight: number }>> = {
-  price: [
-    { pattern: /\b(excise|beer|wine|spirits?)\s+tax(?:es)?\b/i, label: "alcohol tax", weight: 1.8 },
-    { pattern: /\btax(?:es|ed|ing)?\b/i, label: "tax", weight: 1.2 },
-    { pattern: /\b(price|pricing|minimum price|price floor)\b/i, label: "price floor", weight: 1.4 },
-    { pattern: /\b(gallon|barrel|wholesale|surcharge|fee)\b/i, label: "unit fee", weight: 0.9 },
-    { pattern: /\bdiscount|happy hour|coupon|promotion\b/i, label: "price promotion", weight: 1.0 },
-  ],
-  access: [
-    { pattern: /\bsunday sales?\b/i, label: "Sunday sales", weight: 1.7 },
-    { pattern: /\b(hours?|closing time|last call|late[-\s]?night)\b/i, label: "sales hours", weight: 1.3 },
-    { pattern: /\b(outlet density|retail outlet|license quota|store density)\b/i, label: "outlet density", weight: 1.6 },
-    { pattern: /\b(grocery|convenience|liquor store|off[-\s]?premise|on[-\s]?premise)\b/i, label: "retail access", weight: 1.1 },
-    { pattern: /\b(delivery|takeout|to[-\s]?go|online order|direct shipment)\b/i, label: "remote access", weight: 1.2 },
-  ],
-  enforcement: [
-    { pattern: /\b(underage|minor|fake id|identification|carding)\b/i, label: "underage purchase", weight: 1.8 },
-    { pattern: /\b(penalty|fine|violation|civil sanction|criminal sanction)\b/i, label: "penalty", weight: 1.4 },
-    { pattern: /\b(compliance check|sting|inspection|audit)\b/i, label: "compliance check", weight: 1.5 },
-    { pattern: /\b(suspend|suspension|revoke|revocation|license action)\b/i, label: "license consequence", weight: 1.5 },
-    { pattern: /\b(dui|dwi|bac|ignition interlock|sobriety checkpoint)\b/i, label: "driving enforcement", weight: 1.3 },
-  ],
+type ZeroShotOutput = {
+  labels: string[];
+  scores: number[];
 };
 
-const FALLBACK: Record<MechanismKey, string> = {
-  price: "pricing language",
-  access: "availability language",
-  enforcement: "compliance language",
-};
+type ZeroShotClassifier = (
+  text: string,
+  labels: string[],
+  options: {
+    hypothesis_template: string;
+    multi_label: true;
+  },
+) => Promise<ZeroShotOutput>;
 
-function normalize(raw: number) {
-  if (raw <= 0) {
-    return 0;
-  }
+const MODEL_ID = "Xenova/mobilebert-uncased-mnli";
+const HYPOTHESIS_TEMPLATE = "This law primarily changes {} mechanisms.";
 
-  return Number((1 - Math.exp(-raw / 3.5)).toFixed(3));
+const CANDIDATES: Array<{
+  candidate: string;
+  description: string;
+  key: MechanismKey;
+  label: string;
+}> = [
+  {
+    key: "price",
+    label: "Price",
+    candidate: "price",
+    description: "taxes, excise rates, minimum pricing, fees, or discounts",
+  },
+  {
+    key: "access",
+    label: "Access",
+    candidate: "access",
+    description: "where, when, or how easily alcohol can be sold or obtained",
+  },
+  {
+    key: "enforcement",
+    label: "Enforcement",
+    candidate: "enforcement",
+    description: "penalties, compliance checks, ID checks, or policing",
+  },
+];
+
+let classifierPromise: Promise<ZeroShotClassifier> | null = null;
+
+export function emptyLawScoreResult(text = ""): LawScoreResult {
+  return {
+    dominant: "price",
+    model: MODEL_ID,
+    ranked: CANDIDATES.map((candidate) => ({
+      key: candidate.key,
+      label: candidate.label,
+      description: candidate.description,
+      score: 0,
+    })),
+    scores: {
+      price: 0,
+      access: 0,
+      enforcement: 0,
+    },
+    summary: text.trim()
+      ? "Click Analyze Law to run the local model on this draft."
+      : "Type a law draft and click Analyze Law.",
+  };
 }
 
-export function scoreLawText(text: string): LawScoreResult {
-  const cleaned = text.trim();
-  const raw: Record<MechanismKey, number> = {
-    price: 0,
-    access: 0,
-    enforcement: 0,
-  };
-  const evidence: Record<MechanismKey, string[]> = {
-    price: [],
-    access: [],
-    enforcement: [],
-  };
-
-  for (const key of Object.keys(LEXICON) as MechanismKey[]) {
-    for (const term of LEXICON[key]) {
-      if (term.pattern.test(cleaned)) {
-        raw[key] += term.weight;
-        if (!evidence[key].includes(term.label)) {
-          evidence[key].push(term.label);
-        }
-      }
-    }
-  }
-
-  const scores = {
-    price: normalize(raw.price),
-    access: normalize(raw.access),
-    enforcement: normalize(raw.enforcement),
-  };
-
-  const ranked = (Object.keys(scores) as MechanismKey[]).sort(
-    (a, b) => scores[b] - scores[a],
+export function buildLawScoreResult(
+  text: string,
+  raw: Array<{ label: string; score: number }>,
+): LawScoreResult {
+  const byLabel = new Map(raw.map((entry) => [entry.label, entry.score]));
+  const total = CANDIDATES.reduce(
+    (sum, candidate) => sum + Math.max(byLabel.get(candidate.candidate) ?? 0, 0),
+    0,
   );
-  const dominant = ranked[0];
-  const topEvidence = evidence[dominant][0] ?? FALLBACK[dominant];
-  const article = dominant === "access" || dominant === "enforcement" ? "an" : "a";
+
+  const ranked = CANDIDATES.map((candidate) => ({
+    key: candidate.key,
+    label: candidate.label,
+    description: candidate.description,
+    score:
+      total > 0
+        ? Number(
+            (
+              Math.max(byLabel.get(candidate.candidate) ?? 0, 0) / total
+            ).toFixed(4),
+          )
+        : 0,
+  })).sort((left, right) => right.score - left.score);
+
+  const scores = ranked.reduce(
+    (accumulator, entry) => {
+      accumulator[entry.key] = entry.score;
+      return accumulator;
+    },
+    {
+      price: 0,
+      access: 0,
+      enforcement: 0,
+    } as MechanismScores,
+  );
+
+  const dominant = ranked[0]?.key ?? "price";
+  const runnerUp = ranked[1];
+  const article =
+    ranked[0]?.label === "Access" || ranked[0]?.label === "Enforcement"
+      ? "an"
+      : "a";
   const summary =
-    cleaned.length === 0
-      ? "Type a law draft to classify it into price, access, and enforcement mechanisms."
-      : `This draft reads most like ${article} ${dominant} change because it mentions ${topEvidence}.`;
+    text.trim().length === 0
+      ? "Type a law draft and click Analyze Law."
+      : `The local model reads this law mostly as ${article} ${ranked[0]?.label.toLowerCase()} change, with ${runnerUp?.label.toLowerCase()} as the secondary mechanism.`;
 
   return {
-    scores,
     dominant,
-    evidence,
+    model: MODEL_ID,
+    ranked,
+    scores,
     summary,
   };
+}
+
+export async function classifyLawText(text: string): Promise<LawScoreResult> {
+  const cleaned = text.trim();
+
+  if (!cleaned) {
+    return emptyLawScoreResult();
+  }
+
+  const classifier = await getClassifier();
+  const result = await classifier(
+    cleaned,
+    CANDIDATES.map((candidate) => candidate.candidate),
+    {
+      hypothesis_template: HYPOTHESIS_TEMPLATE,
+      multi_label: true,
+    },
+  );
+
+  return buildLawScoreResult(
+    cleaned,
+    result.labels.map((label, index) => ({
+      label,
+      score: Number(result.scores[index] ?? 0),
+    })),
+  );
+}
+
+async function getClassifier() {
+  if (!classifierPromise) {
+    classifierPromise = loadClassifier();
+  }
+
+  return classifierPromise;
+}
+
+async function loadClassifier(): Promise<ZeroShotClassifier> {
+  const { pipeline } = await import("@huggingface/transformers");
+
+  return (await pipeline("zero-shot-classification", MODEL_ID, {
+    dtype: "q8",
+  })) as ZeroShotClassifier;
 }
