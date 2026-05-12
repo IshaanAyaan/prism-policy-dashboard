@@ -87,10 +87,11 @@ export function scoreLawText(text: string): LawScoreResult {
   );
   const dominant = ranked[0];
   const topEvidence = evidence[dominant][0] ?? FALLBACK[dominant];
+  const article = dominant === "access" || dominant === "enforcement" ? "an" : "a";
   const summary =
     cleaned.length === 0
       ? "Type a law draft to classify it into price, access, and enforcement mechanisms."
-      : `This draft reads most like an ${dominant} change because it mentions ${topEvidence}.`;
+      : `This draft reads most like ${article} ${dominant} change because it mentions ${topEvidence}.`;
 
   return {
     scores,
