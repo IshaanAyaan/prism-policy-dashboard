@@ -33,7 +33,6 @@ import {
   LayoutDashboard,
   Plus,
   RotateCcw,
-  Scale,
   SlidersHorizontal,
   Sparkles,
   TriangleAlert,
@@ -105,7 +104,6 @@ import { cn } from "@/lib/utils";
 const navItems: Array<{ href: string; label: string; icon: LucideIcon }> = [
   { href: "#dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "#simulator", label: "Simulator", icon: SlidersHorizontal },
-  { href: "#snapshot", label: "Snapshot", icon: Scale },
   { href: "#space", label: "Baselines", icon: Boxes },
   { href: "#story", label: "Project Story", icon: BookOpen },
   { href: "#poster", label: "Poster", icon: FileChartColumn },
@@ -132,6 +130,7 @@ const SPACE_COLORS = [
   "#4f46e5",
   "#15803d",
 ];
+const SPACE_BASELINE_YEAR = baselineYears[0] ?? 2023;
 
 export function PrismDashboard() {
   const [mounted, setMounted] = useState(false);
@@ -139,7 +138,6 @@ export function PrismDashboard() {
   const [beerTaxDelta, setBeerTaxDelta] = useState(0.1);
   const [accessShift, setAccessShift] = useState(0);
   const [enforcementShift, setEnforcementShift] = useState(1);
-  const [spaceYear, setSpaceYear] = useState(2023);
   const [spaceStates, setSpaceStates] = useState<string[]>(["AZ", "CA"]);
   const [spacePickerValue, setSpacePickerValue] = useState("");
 
@@ -177,17 +175,17 @@ export function PrismDashboard() {
   const spaceRows = useMemo(
     () =>
       spaceStates.map((state, index) => {
-        const row = getStateYearRow(state, spaceYear);
+        const row = getStateYearRow(state, SPACE_BASELINE_YEAR);
 
         return {
           abbrev: state,
           color: SPACE_COLORS[index % SPACE_COLORS.length],
           name: row.state_name,
-          scores: getStateMechanismScoresForYear(state, spaceYear),
+          scores: getStateMechanismScoresForYear(state, SPACE_BASELINE_YEAR),
           year: row.year,
         };
       }),
-    [spaceStates, spaceYear],
+    [spaceStates],
   );
   const spacePoints = useMemo(
     () =>
@@ -567,46 +565,9 @@ export function PrismDashboard() {
             </Card>
           </section>
 
-          <section id="snapshot">
-            <Card className="rounded-xl bg-white/94">
-              <CardHeader>
-                <CardTitle className="text-xl">3D Snapshot</CardTitle>
-                <CardDescription>
-                  Static presentation image of the baseline mechanism cube.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
-                <div className="overflow-hidden rounded-lg border bg-white">
-                  <Image
-                    src="/assets/baseline-space-snapshot-v2.png"
-                    alt="Static PRISM baseline mechanism space snapshot"
-                    width={1600}
-                    height={1000}
-                    className="h-auto w-full"
-                  />
-                </div>
-                <div className="grid content-start gap-3 rounded-lg border bg-[#f8fbfa] p-4 text-sm leading-6 text-slate-700">
-                  <p className="font-medium text-slate-950">
-                    Built for a simpler presentation flow.
-                  </p>
-                  <p>
-                    The free-text law analyzer is out of the main experience.
-                    The live 3D section below now focuses only on baseline
-                    state-year mechanism coordinates.
-                  </p>
-                  <p>
-                    This image mirrors the same Price, Access, and Enforcement
-                    cube so the presentation has a static visual even when you
-                    are not interacting with the live model.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </section>
-
           <section
             id="space"
-            className="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(23rem,0.75fr)]"
+            className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_31rem]"
           >
             <Card className="rounded-xl bg-white/94">
               <CardHeader>
@@ -614,14 +575,13 @@ export function PrismDashboard() {
                   3D Price / Access / Enforcement Space
                 </CardTitle>
                 <CardDescription>
-                  Baseline state-year mechanism positions only, with smaller
-                  labels and a larger viewing area.
+                  Fixed baseline state-year mechanism positions for {SPACE_BASELINE_YEAR}.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <MechanismSpace points={spacePoints} />
                 <p className="rounded-lg border bg-[#f8fbfa] p-3 text-sm leading-6 text-slate-700">
-                  Each dot is a selected state at the chosen baseline year. The
+                  Each dot is a selected state at the fixed {SPACE_BASELINE_YEAR} baseline year. The
                   axes stay fixed: Price on x, Enforcement on y, and Access on z.
                 </p>
               </CardContent>
@@ -631,33 +591,16 @@ export function PrismDashboard() {
               <CardHeader>
                 <CardTitle className="text-xl">Baseline Controls</CardTitle>
                 <CardDescription>
-                  Pick a year, add up to {SPACE_COLORS.length} states, and compare
+                  Using {SPACE_BASELINE_YEAR} data. Add up to {SPACE_COLORS.length} states and compare
                   their mechanism coordinates side by side.
                 </CardDescription>
               </CardHeader>
               <CardContent className="grid gap-5">
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
-                  <div className="grid gap-2">
-                    <p className="text-sm font-medium text-slate-900">
-                      Baseline year
-                    </p>
-                    <Select
-                      value={String(spaceYear)}
-                      onValueChange={(value) => setSpaceYear(Number(value))}
-                    >
-                      <SelectTrigger className="bg-white">
-                        <SelectValue placeholder="Select baseline year" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {baselineYears.map((year) => (
-                          <SelectItem key={year} value={String(year)}>
-                            {year}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                <div className="grid gap-4">
+                  <div className="rounded-lg border bg-[#f8fbfa] p-3 text-sm text-slate-700">
+                    <span className="font-medium text-slate-900">Baseline year:</span>{" "}
+                    {SPACE_BASELINE_YEAR}
                   </div>
-
                   <div className="grid gap-2">
                     <p className="flex items-center gap-2 text-sm font-medium text-slate-900">
                       <Plus className="size-4 text-slate-500" />
@@ -690,7 +633,7 @@ export function PrismDashboard() {
 
                 <div className="grid gap-3">
                   <p className="text-sm font-medium text-slate-900">
-                    Selected baselines
+                    Selected states
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {spaceRows.map((row) => (
@@ -706,7 +649,6 @@ export function PrismDashboard() {
                         <span className="font-medium text-slate-900">
                           {row.abbrev}
                         </span>
-                        <span className="text-slate-500">{row.year}</span>
                         <button
                           type="button"
                           className="rounded-full p-0.5 text-slate-400 transition hover:bg-slate-200 hover:text-slate-700"
@@ -724,34 +666,39 @@ export function PrismDashboard() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>State</TableHead>
-                        <TableHead>Year</TableHead>
-                        <TableHead className="text-right">Price</TableHead>
-                        <TableHead className="text-right">Access</TableHead>
-                        <TableHead className="text-right">Enforcement</TableHead>
+                        <TableHead className="w-[9rem] text-xs">State</TableHead>
+                        <TableHead className="text-right text-xs">Price</TableHead>
+                        <TableHead className="text-right text-xs">Access</TableHead>
+                        <TableHead className="text-right text-xs">Enforcement</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {spaceRows.map((row) => (
                         <TableRow key={`${row.abbrev}-${row.year}`}>
-                          <TableCell className="font-medium">
-                            <span className="inline-flex items-center gap-2">
+                          <TableCell className="align-top">
+                            <div className="flex items-start gap-2">
                               <span
                                 className="size-2.5 rounded-full"
                                 style={{ backgroundColor: row.color }}
                                 aria-hidden="true"
                               />
-                              {row.name} ({row.abbrev})
-                            </span>
+                              <div className="min-w-0">
+                                <p className="text-sm font-medium text-slate-900">
+                                  {row.abbrev}
+                                </p>
+                                <p className="text-xs leading-4 text-slate-500">
+                                  {row.name}
+                                </p>
+                              </div>
+                            </div>
                           </TableCell>
-                          <TableCell>{row.year}</TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right text-sm">
                             {axisPercent(row.scores.price)}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right text-sm">
                             {axisPercent(row.scores.access)}
                           </TableCell>
-                          <TableCell className="text-right">
+                          <TableCell className="text-right text-sm">
                             {axisPercent(row.scores.enforcement)}
                           </TableCell>
                         </TableRow>
@@ -759,12 +706,6 @@ export function PrismDashboard() {
                     </TableBody>
                   </Table>
                 </div>
-
-                <p className="rounded-lg border bg-[#fbf6f4] p-3 text-sm leading-6 text-slate-700">
-                  This view is intentionally simplified for presentation use. It
-                  compares baseline state-year mechanism positions and does not
-                  claim to simulate the text of a new law.
-                </p>
               </CardContent>
             </Card>
           </section>
@@ -1185,8 +1126,7 @@ function HelpDrawer({
             "Select a state from the forecast workspace.",
             "Adjust beer tax, Sunday-sales/access, and enforcement sliders.",
             "Compare the baseline forecast against the scenario forecast.",
-            "Open the baseline explorer and choose a year.",
-            "Add one or more states to place their dots in the 3D space.",
+            "Open the baseline explorer and add one or more states.",
             "Use the table to read the price, access, and enforcement coordinates.",
             "Treat every scenario as predictive evidence, not causal proof.",
           ].map((step, index) => (

@@ -11,8 +11,7 @@ PRISM is a transparent alcohol-policy evidence system. It combines a 2003-2023 s
 - Select a state and inspect observed alcohol-impaired fatality trends.
 - Adjust beer-tax, access/Sunday-sales, and underage-purchase enforcement levers.
 - Compare baseline and scenario forecasts.
-- View a static 3D snapshot for presentation use.
-- Explore baseline state-year mechanism positions in a larger 3D price/access/enforcement space.
+- Explore baseline state-year mechanism positions in a fixed-year 3D price/access/enforcement space.
 - Review the SRP weekly research arc, poster preview, model evidence, causal audit, and limitations.
 - Jump to the live Senior Project blog: [Ishaan R. - BASIS Senior Projects](https://basisseniorprojects.com/author/ishaan-r-2026/).
 
@@ -35,7 +34,6 @@ The dashboard includes curated public assets from the PRISM research package:
 - `public/assets/event-study.png`
 - `public/assets/scenario-deltas.png`
 - `public/assets/azsef-poster-preview.jpg`
-- `public/assets/baseline-space-snapshot-v2.png`
 
 ![Poster preview](public/assets/azsef-poster-preview.jpg)
 

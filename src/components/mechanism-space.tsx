@@ -82,9 +82,9 @@ function Axis({
 
 export function MechanismSpace({ points }: MechanismSpaceProps) {
   return (
-    <div className="h-[31rem] overflow-hidden rounded-lg border bg-[#f8fbfa] shadow-inner">
+    <div className="h-[25rem] overflow-hidden rounded-lg border bg-[#f8fbfa] shadow-inner lg:h-[26rem]">
       <Canvas
-        camera={{ position: [1.75, 1.38, 2.12], fov: 40 }}
+        camera={{ position: [1.72, 1.34, 2.06], fov: 41 }}
         gl={{ antialias: true, alpha: false }}
       >
         <color attach="background" args={["#f8fbfa"]} />
