@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PRISM Alcohol Policy Impact Atlas
 
-## Getting Started
+Teacher-facing Senior Project dashboard for **Ishaan Ranjan**.
 
-First, run the development server:
+PRISM is a transparent alcohol-policy evidence system. It combines a 2003-2023 state-year panel with mechanism-aware policy text features, then lets users explore how price, access, and enforcement mechanisms relate to forecasted alcohol-impaired fatality risk.
+
+![PRISM preview](public/assets/social-preview.png)
+
+## What the App Does
+
+- Select a state and inspect observed alcohol-impaired fatality trends.
+- Adjust beer-tax, access/Sunday-sales, and underage-purchase enforcement levers.
+- Compare baseline and scenario forecasts.
+- Type a hypothetical law and classify it into price, access, and enforcement mechanisms.
+- Explore the same mechanism signals in a 3D price/access/enforcement space.
+- Review the SRP weekly research arc, AZSEF poster preview, model evidence, causal audit, and limitations.
+- Jump to the live Senior Project blog: [Ishaan R. - BASIS Senior Projects](https://basisseniorprojects.com/author/ishaan-r-2026/).
+
+## Research Headline Metrics
+
+| Metric | Value | Meaning |
+| --- | ---: | --- |
+| Mechanism Macro-F1 | 0.962 | Held-out mechanism text benchmark |
+| Forecast RMSE | 0.863 | Random Forest held-out crash forecasting error |
+| Forecast R-squared | 0.454 | Held-out 2020-2023 forecasting fit |
+| Causal post coefficient | -0.379 | Average post-event beer-tax coefficient per 100k |
+
+## Screenshots and Assets
+
+The dashboard includes curated public assets from the PRISM research package:
+
+- `public/assets/social-preview.png`
+- `public/assets/pipeline-architecture.png`
+- `public/assets/forecast-comparison.png`
+- `public/assets/event-study.png`
+- `public/assets/scenario-deltas.png`
+- `public/assets/azsef-poster-preview.jpg`
+
+![AZSEF poster preview](public/assets/azsef-poster-preview.jpg)
+
+## Data Sources
+
+The public app uses curated lightweight artifacts generated from the local PRISM v3/v2 research outputs. Original source families:
+
+- APIS policy data
+- FARS alcohol-impaired and alcohol-involved fatality outcomes
+- FHWA vehicle miles traveled exposure measures
+- FRED economic covariates
+- YRBS teen current-use and binge-drinking outcomes
+
+The app does not scrape the blog and does not require paid API keys. The law-text interpreter is deterministic and presentation-safe.
+
+## Local Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Verification
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run lint
+npm run test
+npm run build
+```
 
-## Learn More
+The test suite covers deterministic scenario calculations and the transparent law-text mechanism scorer.
 
-To learn more about Next.js, take a look at the following resources:
+## Vercel Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This is a standard Next.js App Router app and can be deployed directly to Vercel.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npx vercel login
+npx vercel
+```
 
-## Deploy on Vercel
+Recommended production settings:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Framework preset: Next.js
+- Build command: `npm run build`
+- Install command: `npm install`
+- Output directory: handled by Next.js
+- Environment variables: none required for v1
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Important Limitations
+
+PRISM should be presented as an evidence dashboard, not as causal proof for every hypothetical policy.
+
+- Scenario forecasts are model responses, not guaranteed real-world effects.
+- Teen drinking outcomes are secondary because YRBS coverage is sparse.
+- Many policy text rows rely on supplemental text; the UI surfaces coverage provenance and text quality.
+- The causal audit is directional and centered on a limited set of beer-tax increase events.
+- Random Forest performed best for forecasting, but forecasting performance is not the same as causal identification.
+
+## Project Links
+
+- Blog author page: [Ishaan R. - BASIS Senior Projects](https://basisseniorprojects.com/author/ishaan-r-2026/)
+- BASIS Peoria 2026 cohort: [Senior Projects Peoria 2026](https://basisseniorprojects.com/peoria-2026/)
