@@ -4,11 +4,15 @@ import { Html, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import type { MechanismScores } from "@/lib/prism-data";
 
+export type MechanismSpacePoint = {
+  label: string;
+  scores: MechanismScores;
+  color: string;
+  size?: number;
+};
+
 type MechanismSpaceProps = {
-  stateName: string;
-  stateScores: MechanismScores;
-  lawScores: MechanismScores;
-  scenarioVector: MechanismScores;
+  points: MechanismSpacePoint[];
 };
 
 const COLORS = {
@@ -17,32 +21,26 @@ const COLORS = {
   enforcement: "#be3455",
 };
 
-function Point({
-  label,
-  scores,
-  color,
-  size,
-}: {
-  label: string;
-  scores: MechanismScores;
-  color: string;
-  size: number;
-}) {
+function Point({ point }: { point: MechanismSpacePoint }) {
   const position: [number, number, number] = [
-    scores.price - 0.5,
-    scores.enforcement - 0.5,
-    scores.access - 0.5,
+    point.scores.price - 0.5,
+    point.scores.enforcement - 0.5,
+    point.scores.access - 0.5,
   ];
 
   return (
     <group position={position}>
       <mesh>
-        <sphereGeometry args={[size, 32, 32]} />
-        <meshStandardMaterial color={color} roughness={0.38} metalness={0.08} />
+        <sphereGeometry args={[point.size ?? 0.032, 28, 28]} />
+        <meshStandardMaterial
+          color={point.color}
+          roughness={0.34}
+          metalness={0.08}
+        />
       </mesh>
-      <Html distanceFactor={14} position={[0.06, 0.06, 0]}>
-        <div className="origin-top-left scale-[0.45] whitespace-nowrap rounded-sm border border-white/40 bg-white/90 px-2 py-1 text-[10px] font-semibold text-slate-900 shadow-sm">
-          {label}
+      <Html distanceFactor={18} position={[0.03, 0.03, 0]}>
+        <div className="origin-top-left scale-[0.24] whitespace-nowrap rounded-sm border border-white/45 bg-white/88 px-1.5 py-0.5 text-[8px] font-semibold text-slate-900 shadow-sm">
+          {point.label}
         </div>
       </Html>
     </group>
@@ -67,14 +65,14 @@ function Axis({
         <meshStandardMaterial color={color} />
       </mesh>
       <Html
-        distanceFactor={14}
+        distanceFactor={18}
         position={[
-          position[0] + scale[0] / 2 + 0.06,
-          position[1] + scale[1] / 2 + 0.06,
-          position[2] + scale[2] / 2 + 0.06,
+          position[0] + scale[0] / 2 + 0.04,
+          position[1] + scale[1] / 2 + 0.04,
+          position[2] + scale[2] / 2 + 0.04,
         ]}
       >
-        <div className="origin-top-left scale-[0.38] whitespace-nowrap rounded-sm bg-slate-950/85 px-2 py-1 text-[10px] font-medium text-white">
+        <div className="origin-top-left scale-[0.17] whitespace-nowrap rounded-sm bg-slate-950/80 px-1.5 py-0.5 text-[8px] font-medium text-white">
           {label}
         </div>
       </Html>
@@ -82,75 +80,55 @@ function Axis({
   );
 }
 
-export function MechanismSpace({
-  stateName,
-  stateScores,
-  lawScores,
-  scenarioVector,
-}: MechanismSpaceProps) {
+export function MechanismSpace({ points }: MechanismSpaceProps) {
   return (
-    <div className="h-[22rem] overflow-hidden rounded-lg border bg-[#f8fbfa] shadow-inner">
+    <div className="h-[31rem] overflow-hidden rounded-lg border bg-[#f8fbfa] shadow-inner">
       <Canvas
-        camera={{ position: [1.8, 1.6, 2.0], fov: 45 }}
+        camera={{ position: [1.75, 1.38, 2.12], fov: 40 }}
         gl={{ antialias: true, alpha: false }}
       >
         <color attach="background" args={["#f8fbfa"]} />
-        <ambientLight intensity={0.72} />
-        <directionalLight position={[2, 3, 4]} intensity={1.2} />
-        <group rotation={[0, -0.25, 0]}>
+        <ambientLight intensity={0.8} />
+        <directionalLight position={[2, 3, 4]} intensity={1.1} />
+        <group rotation={[0, -0.22, 0]}>
           <Axis
             label="Price"
             color={COLORS.price}
             position={[0, -0.5, -0.5]}
-            scale={[1.08, 0.018, 0.018]}
+            scale={[1.08, 0.015, 0.015]}
           />
           <Axis
             label="Enforcement"
             color={COLORS.enforcement}
             position={[-0.5, 0, -0.5]}
-            scale={[0.018, 1.08, 0.018]}
+            scale={[0.015, 1.08, 0.015]}
           />
           <Axis
             label="Access"
             color={COLORS.access}
             position={[-0.5, -0.5, 0]}
-            scale={[0.018, 0.018, 1.08]}
+            scale={[0.015, 0.015, 1.08]}
           />
           <mesh position={[0, 0, 0]}>
             <boxGeometry args={[1, 1, 1]} />
             <meshStandardMaterial
               color="#d9e7e1"
               transparent
-              opacity={0.12}
+              opacity={0.1}
               wireframe
             />
           </mesh>
-          <Point
-            label={stateName}
-            scores={stateScores}
-            color="#254d74"
-            size={0.055}
-          />
-          <Point
-            label="Law"
-            scores={lawScores}
-            color="#be3455"
-            size={0.07}
-          />
-          <Point
-            label="Scenario"
-            scores={scenarioVector}
-            color="#0f9f9a"
-            size={0.047}
-          />
+          {points.map((point) => (
+            <Point key={`${point.label}-${point.color}`} point={point} />
+          ))}
         </group>
         <OrbitControls
           autoRotate
-          autoRotateSpeed={0.35}
+          autoRotateSpeed={0.22}
           enableDamping
           enablePan={false}
           maxDistance={5}
-          minDistance={1.5}
+          minDistance={1.55}
         />
       </Canvas>
     </div>

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import type { ReactNode } from "react";
-import { startTransition, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -21,7 +21,6 @@ import type { LucideIcon } from "lucide-react";
 import {
   ArrowUpRight,
   BookOpen,
-  Brain,
   Boxes,
   CircleHelp,
   ClipboardList,
@@ -32,12 +31,13 @@ import {
   Gauge,
   GitBranch,
   LayoutDashboard,
-  LoaderCircle,
+  Plus,
   RotateCcw,
   Scale,
   SlidersHorizontal,
   Sparkles,
   TriangleAlert,
+  X,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -76,17 +76,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Textarea } from "@/components/ui/textarea";
 import { MechanismSpace } from "@/components/mechanism-space";
-import {
-  classifyLawText,
-  emptyLawScoreResult,
-  type LawScoreResult,
-} from "@/lib/mechanism-scorer";
 import {
   BLOG_URL,
   COHORT_URL,
   axisPercent,
+  baselineYears,
   blogWeeks,
   calculateScenario,
   crashModels,
@@ -95,7 +90,9 @@ import {
   formatSigned,
   getLatestState,
   getStateMechanismScores,
+  getStateMechanismScoresForYear,
   getStateSeries,
+  getStateYearRow,
   getTopScenarioDeltas,
   headline,
   mechanismModels,
@@ -105,14 +102,11 @@ import {
 } from "@/lib/prism-data";
 import { cn } from "@/lib/utils";
 
-const DEFAULT_LAW =
-  "The state raises the beer excise tax by $0.10 per gallon, funds compliance checks, and increases penalties for underage alcohol sales.";
-
 const navItems: Array<{ href: string; label: string; icon: LucideIcon }> = [
   { href: "#dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "#simulator", label: "Simulator", icon: SlidersHorizontal },
-  { href: "#law", label: "Law Text", icon: Scale },
-  { href: "#space", label: "Mechanism Space", icon: Boxes },
+  { href: "#snapshot", label: "Snapshot", icon: Scale },
+  { href: "#space", label: "Baselines", icon: Boxes },
   { href: "#story", label: "Project Story", icon: BookOpen },
   { href: "#poster", label: "Poster", icon: FileChartColumn },
   { href: "#limits", label: "Limits", icon: TriangleAlert },
@@ -130,18 +124,24 @@ const mechanismIndicatorClasses = {
   enforcement: "[&_[data-slot=progress-indicator]]:bg-[#be3455]",
 };
 
+const SPACE_COLORS = [
+  "#254d74",
+  "#0f9f9a",
+  "#d47a21",
+  "#be3455",
+  "#4f46e5",
+  "#15803d",
+];
+
 export function PrismDashboard() {
   const [mounted, setMounted] = useState(false);
   const [selectedState, setSelectedState] = useState("AZ");
   const [beerTaxDelta, setBeerTaxDelta] = useState(0.1);
   const [accessShift, setAccessShift] = useState(0);
   const [enforcementShift, setEnforcementShift] = useState(1);
-  const [lawDraft, setLawDraft] = useState(DEFAULT_LAW);
-  const [lawScore, setLawScore] = useState<LawScoreResult>(() =>
-    emptyLawScoreResult(DEFAULT_LAW),
-  );
-  const [isAnalyzingLaw, setIsAnalyzingLaw] = useState(false);
-  const [lawError, setLawError] = useState<string | null>(null);
+  const [spaceYear, setSpaceYear] = useState(2023);
+  const [spaceStates, setSpaceStates] = useState<string[]>(["AZ", "CA"]);
+  const [spacePickerValue, setSpacePickerValue] = useState("");
 
   const selected = states.find((state) => state.abbrev === selectedState);
   const stateName = selected?.name ?? selectedState;
@@ -161,10 +161,6 @@ export function PrismDashboard() {
       }),
     [accessShift, beerTaxDelta, enforcementShift, selectedState],
   );
-  const scenarioVector = useMemo(
-    () => contributionVector(scenario.contributions),
-    [scenario.contributions],
-  );
 
   const stateChart = series.map((row) => ({
     year: row.year,
@@ -178,32 +174,35 @@ export function PrismDashboard() {
   }));
   const scenarioDeltas = getTopScenarioDeltas(9);
   const selectedMechanismModel = mechanismModels[0];
-  const lawScores = lawScore.scores;
+  const spaceRows = useMemo(
+    () =>
+      spaceStates.map((state, index) => {
+        const row = getStateYearRow(state, spaceYear);
 
-  async function handleLawAnalysis(text: string) {
-    const cleaned = text.trim();
-
-    if (!cleaned) {
-      setLawError("Enter law text before running the model.");
-      startTransition(() => setLawScore(emptyLawScoreResult()));
-      return;
-    }
-
-    setIsAnalyzingLaw(true);
-    setLawError(null);
-
-    try {
-      const nextScore = await classifyLawText(cleaned);
-
-      startTransition(() => setLawScore(nextScore));
-    } catch {
-      setLawError(
-        "The local model could not finish. Try again after the first download completes.",
-      );
-    } finally {
-      setIsAnalyzingLaw(false);
-    }
-  }
+        return {
+          abbrev: state,
+          color: SPACE_COLORS[index % SPACE_COLORS.length],
+          name: row.state_name,
+          scores: getStateMechanismScoresForYear(state, spaceYear),
+          year: row.year,
+        };
+      }),
+    [spaceStates, spaceYear],
+  );
+  const spacePoints = useMemo(
+    () =>
+      spaceRows.map((row, index) => ({
+        color: row.color,
+        label: row.abbrev,
+        scores: row.scores,
+        size: index === 0 ? 0.046 : 0.04,
+      })),
+    [spaceRows],
+  );
+  const availableSpaceStates = states.filter(
+    (state) => !spaceStates.includes(state.abbrev),
+  );
+  const canAddMoreSpaceStates = spaceStates.length < SPACE_COLORS.length;
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => setMounted(true));
@@ -211,39 +210,21 @@ export function PrismDashboard() {
     return () => window.cancelAnimationFrame(frame);
   }, []);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function runInitialAnalysis() {
-      setIsAnalyzingLaw(true);
-
-      try {
-        const nextScore = await classifyLawText(DEFAULT_LAW);
-
-        if (cancelled) {
-          return;
-        }
-
-        startTransition(() => setLawScore(nextScore));
-      } catch {
-        if (!cancelled) {
-          setLawError(
-            "The local model did not load on first pass. You can try Analyze Law again.",
-          );
-        }
-      } finally {
-        if (!cancelled) {
-          setIsAnalyzingLaw(false);
-        }
-      }
+  function handleAddSpaceState(value: string | null) {
+    if (!value || !canAddMoreSpaceStates || spaceStates.includes(value)) {
+      setSpacePickerValue("");
+      return;
     }
 
-    void runInitialAnalysis();
+    setSpaceStates((current) => [...current, value]);
+    setSpacePickerValue("");
+  }
 
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  function handleRemoveSpaceState(value: string) {
+    setSpaceStates((current) =>
+      current.length === 1 ? current : current.filter((state) => state !== value),
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#f7fbf9_0%,#eef4f1_48%,#f8faf9_100%)]">
@@ -586,126 +567,203 @@ export function PrismDashboard() {
             </Card>
           </section>
 
-          <section
-            id="law"
-            className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(22rem,0.8fr)]"
-          >
+          <section id="snapshot">
             <Card className="rounded-xl bg-white/94">
               <CardHeader>
-                <CardTitle className="text-xl">Law Interpreter</CardTitle>
+                <CardTitle className="text-xl">3D Snapshot</CardTitle>
                 <CardDescription>
-                  Analyze a hypothetical law with a small local MobileBERT
-                  zero-shot model running in the browser.
+                  Static presentation image of the baseline mechanism cube.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <Textarea
-                  value={lawDraft}
-                  onChange={(event) => setLawDraft(event.target.value)}
-                  onKeyDown={(event) => {
-                    if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
-                      event.preventDefault();
-                      void handleLawAnalysis(lawDraft);
-                    }
-                  }}
-                  className="min-h-40 resize-none bg-white text-base leading-7"
-                  aria-label="Hypothetical law text"
-                />
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="text-sm leading-6 text-slate-600">
-                    First run downloads the model into browser cache.
-                  </div>
-                  <Button
-                    onClick={() => void handleLawAnalysis(lawDraft)}
-                    disabled={isAnalyzingLaw}
-                    className="sm:min-w-40"
-                  >
-                    {isAnalyzingLaw ? (
-                      <>
-                        <LoaderCircle className="animate-spin" />
-                        Analyzing
-                      </>
-                    ) : (
-                      <>
-                        <Brain />
-                        Analyze Law
-                      </>
-                    )}
-                  </Button>
+              <CardContent className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(18rem,0.85fr)]">
+                <div className="overflow-hidden rounded-lg border bg-white">
+                  <Image
+                    src="/assets/baseline-space-snapshot-v2.png"
+                    alt="Static PRISM baseline mechanism space snapshot"
+                    width={1600}
+                    height={1000}
+                    className="h-auto w-full"
+                  />
                 </div>
-                {lawError ? (
-                  <p className="rounded-lg border border-[#e9b4bf] bg-[#fff3f6] p-3 text-sm leading-6 text-[#8b203a]">
-                    {lawError}
+                <div className="grid content-start gap-3 rounded-lg border bg-[#f8fbfa] p-4 text-sm leading-6 text-slate-700">
+                  <p className="font-medium text-slate-950">
+                    Built for a simpler presentation flow.
                   </p>
-                ) : (
-                  <p className="rounded-lg border bg-[#fbf6f4] p-3 text-sm leading-6 text-slate-700">
-                    {lawScore.summary}
+                  <p>
+                    The free-text law analyzer is out of the main experience.
+                    The live 3D section below now focuses only on baseline
+                    state-year mechanism coordinates.
                   </p>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="rounded-xl bg-white/94">
-              <CardHeader>
-                <CardTitle className="text-xl">Mechanism Result</CardTitle>
-                <CardDescription>
-                  These are model confidence scores for each mechanism, not
-                  estimates of how large the real-world policy effect would be.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-5">
-                <MechanismBars scores={lawScores} />
-                <p className="rounded-lg border bg-[#f8fbfa] p-3 text-sm leading-6 text-slate-600">
-                  A big dollar amount can still matter a lot in real policy
-                  terms. These percentages only show how strongly the model
-                  reads the text as price, access, or enforcement language.
-                </p>
-                <div className="grid gap-3">
-                  {lawScore.ranked.map((entry) => (
-                    <div
-                      key={entry.key}
-                      className="rounded-lg border bg-[#f8fbfa] p-3"
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="font-medium text-slate-900">{entry.label}</p>
-                        <p className="text-sm tabular-nums text-slate-500">
-                          {axisPercent(entry.score)}
-                        </p>
-                      </div>
-                      <p className="mt-1 text-sm leading-6 text-slate-600">
-                        {entry.description}
-                      </p>
-                    </div>
-                  ))}
+                  <p>
+                    This image mirrors the same Price, Access, and Enforcement
+                    cube so the presentation has a static visual even when you
+                    are not interacting with the live model.
+                  </p>
                 </div>
-                <p className="rounded-lg border bg-white p-3 text-sm leading-6 text-slate-600">
-                  Model: <span className="font-medium text-slate-900">{lawScore.model}</span>
-                </p>
               </CardContent>
             </Card>
           </section>
 
-          <section id="space">
+          <section
+            id="space"
+            className="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(23rem,0.75fr)]"
+          >
             <Card className="rounded-xl bg-white/94">
               <CardHeader>
                 <CardTitle className="text-xl">
                   3D Price / Access / Enforcement Space
                 </CardTitle>
                 <CardDescription>
-                  Blue is the selected state profile, red is the analyzed law,
-                  and green is the current scenario lever mix.
+                  Baseline state-year mechanism positions only, with smaller
+                  labels and a larger viewing area.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <MechanismSpace
-                  stateName={selectedState}
-                  stateScores={stateScores}
-                  lawScores={lawScores}
-                  scenarioVector={scenarioVector}
-                />
-                <p>
-                  The red point updates only after you click Analyze Law, so the
-                  3D space stays tied to the model output instead of live typing.
+                <MechanismSpace points={spacePoints} />
+                <p className="rounded-lg border bg-[#f8fbfa] p-3 text-sm leading-6 text-slate-700">
+                  Each dot is a selected state at the chosen baseline year. The
+                  axes stay fixed: Price on x, Enforcement on y, and Access on z.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="rounded-xl bg-white/94">
+              <CardHeader>
+                <CardTitle className="text-xl">Baseline Controls</CardTitle>
+                <CardDescription>
+                  Pick a year, add up to {SPACE_COLORS.length} states, and compare
+                  their mechanism coordinates side by side.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-5">
+                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+                  <div className="grid gap-2">
+                    <p className="text-sm font-medium text-slate-900">
+                      Baseline year
+                    </p>
+                    <Select
+                      value={String(spaceYear)}
+                      onValueChange={(value) => setSpaceYear(Number(value))}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue placeholder="Select baseline year" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {baselineYears.map((year) => (
+                          <SelectItem key={year} value={String(year)}>
+                            {year}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid gap-2">
+                    <p className="flex items-center gap-2 text-sm font-medium text-slate-900">
+                      <Plus className="size-4 text-slate-500" />
+                      Add state
+                    </p>
+                    <Select
+                      value={spacePickerValue}
+                      onValueChange={handleAddSpaceState}
+                      disabled={!availableSpaceStates.length || !canAddMoreSpaceStates}
+                    >
+                      <SelectTrigger className="bg-white">
+                        <SelectValue
+                          placeholder={
+                            canAddMoreSpaceStates
+                              ? "Choose a state"
+                              : "State limit reached"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {availableSpaceStates.map((state) => (
+                          <SelectItem key={state.abbrev} value={state.abbrev}>
+                            {state.name} ({state.abbrev})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid gap-3">
+                  <p className="text-sm font-medium text-slate-900">
+                    Selected baselines
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {spaceRows.map((row) => (
+                      <div
+                        key={row.abbrev}
+                        className="inline-flex items-center gap-2 rounded-full border bg-[#f8fbfa] px-3 py-1.5 text-sm text-slate-700"
+                      >
+                        <span
+                          className="size-2.5 rounded-full"
+                          style={{ backgroundColor: row.color }}
+                          aria-hidden="true"
+                        />
+                        <span className="font-medium text-slate-900">
+                          {row.abbrev}
+                        </span>
+                        <span className="text-slate-500">{row.year}</span>
+                        <button
+                          type="button"
+                          className="rounded-full p-0.5 text-slate-400 transition hover:bg-slate-200 hover:text-slate-700"
+                          onClick={() => handleRemoveSpaceState(row.abbrev)}
+                          aria-label={`Remove ${row.abbrev} from baseline comparison`}
+                        >
+                          <X className="size-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>State</TableHead>
+                        <TableHead>Year</TableHead>
+                        <TableHead className="text-right">Price</TableHead>
+                        <TableHead className="text-right">Access</TableHead>
+                        <TableHead className="text-right">Enforcement</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {spaceRows.map((row) => (
+                        <TableRow key={`${row.abbrev}-${row.year}`}>
+                          <TableCell className="font-medium">
+                            <span className="inline-flex items-center gap-2">
+                              <span
+                                className="size-2.5 rounded-full"
+                                style={{ backgroundColor: row.color }}
+                                aria-hidden="true"
+                              />
+                              {row.name} ({row.abbrev})
+                            </span>
+                          </TableCell>
+                          <TableCell>{row.year}</TableCell>
+                          <TableCell className="text-right">
+                            {axisPercent(row.scores.price)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {axisPercent(row.scores.access)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {axisPercent(row.scores.enforcement)}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                <p className="rounded-lg border bg-[#fbf6f4] p-3 text-sm leading-6 text-slate-700">
+                  This view is intentionally simplified for presentation use. It
+                  compares baseline state-year mechanism positions and does not
+                  claim to simulate the text of a new law.
                 </p>
               </CardContent>
             </Card>
@@ -1127,8 +1185,9 @@ function HelpDrawer({
             "Select a state from the forecast workspace.",
             "Adjust beer tax, Sunday-sales/access, and enforcement sliders.",
             "Compare the baseline forecast against the scenario forecast.",
-            "Type a hypothetical law and click Analyze Law.",
-            "Read the price, access, and enforcement mechanism result.",
+            "Open the baseline explorer and choose a year.",
+            "Add one or more states to place their dots in the 3D space.",
+            "Use the table to read the price, access, and enforcement coordinates.",
             "Treat every scenario as predictive evidence, not causal proof.",
           ].map((step, index) => (
             <div key={step} className="flex gap-3 rounded-lg border p-3">
@@ -1351,21 +1410,6 @@ function enforcementLabel(value: number) {
     return "Stricter checks";
   }
   return "No enforcement shift";
-}
-
-function contributionVector(values: MechanismScores): MechanismScores {
-  const absolute = {
-    price: Math.abs(values.price),
-    access: Math.abs(values.access),
-    enforcement: Math.abs(values.enforcement),
-  };
-  const max = Math.max(absolute.price, absolute.access, absolute.enforcement, 0.01);
-
-  return {
-    price: absolute.price / max,
-    access: absolute.access / max,
-    enforcement: absolute.enforcement / max,
-  };
 }
 
 function sliderNumber(value: number | readonly number[]) {

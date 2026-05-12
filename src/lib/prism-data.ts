@@ -149,6 +149,10 @@ export const states = Array.from(
   ).values(),
 ).sort((a, b) => a.name.localeCompare(b.name));
 
+export const baselineYears = Array.from(
+  new Set(stateSeries.map((row) => row.year)),
+).sort((a, b) => b - a);
+
 export const headline = {
   macroF1: metricDisplay("mechanism_macro_f1", "0.962"),
   rmse: metricDisplay("best_crash_rmse", "0.863"),
@@ -168,6 +172,14 @@ export function getLatestState(state: string) {
   return rows[rows.length - 1] ?? stateSeries[0];
 }
 
+export function getStateYearRow(state: string, year: number) {
+  return (
+    stateSeries.find(
+      (row) => row.state_abbrev === state && numeric(row.year) === numeric(year),
+    ) ?? getLatestState(state)
+  );
+}
+
 export function getStateMechanismScores(state: string): MechanismScores {
   const latest = getLatestState(state);
 
@@ -175,6 +187,19 @@ export function getStateMechanismScores(state: string): MechanismScores {
     price: clamp01(numeric(latest.mech_v3_price_score)),
     access: clamp01(numeric(latest.mech_v3_access_score)),
     enforcement: clamp01(numeric(latest.mech_v3_enforcement_score)),
+  };
+}
+
+export function getStateMechanismScoresForYear(
+  state: string,
+  year: number,
+): MechanismScores {
+  const row = getStateYearRow(state, year);
+
+  return {
+    price: clamp01(numeric(row.mech_v3_price_score)),
+    access: clamp01(numeric(row.mech_v3_access_score)),
+    enforcement: clamp01(numeric(row.mech_v3_enforcement_score)),
   };
 }
 

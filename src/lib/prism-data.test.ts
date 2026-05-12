@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
+  baselineYears,
   calculateScenario,
   getStateMechanismScores,
+  getStateMechanismScoresForYear,
+  getStateYearRow,
   states,
 } from "./prism-data";
 
@@ -39,5 +42,18 @@ describe("PRISM scenario utilities", () => {
     expect(scores.access).toBeLessThanOrEqual(1);
     expect(scores.enforcement).toBeGreaterThanOrEqual(0);
     expect(scores.enforcement).toBeLessThanOrEqual(1);
+  });
+
+  it("exposes baseline years and state-year lookups for the space explorer", () => {
+    expect(baselineYears[0]).toBeGreaterThanOrEqual(2023);
+    expect(baselineYears.at(-1)).toBeLessThanOrEqual(2003);
+
+    const row = getStateYearRow("AZ", 2023);
+    const scores = getStateMechanismScoresForYear("AZ", 2023);
+
+    expect(row.state_abbrev).toBe("AZ");
+    expect(row.year).toBe(2023);
+    expect(scores.price).toBeGreaterThanOrEqual(0);
+    expect(scores.price).toBeLessThanOrEqual(1);
   });
 });
