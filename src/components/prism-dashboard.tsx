@@ -27,11 +27,13 @@ import {
   Download,
   ExternalLink,
   FileChartColumn,
+  FileText,
   FlaskConical,
   Gauge,
   GitBranch,
   LayoutDashboard,
   Plus,
+  Printer,
   RotateCcw,
   SlidersHorizontal,
   Sparkles,
@@ -133,8 +135,7 @@ const SPACE_COLORS = [
 const SPACE_BASELINE_YEAR = baselineYears[0] ?? 2023;
 const SCHOLAR_URL =
   "https://scholar.google.com/citations?user=pV4cNlQAAAAJ&hl=en";
-const FULL_PAPER_URL: string | null = null;
-const PAPER_DOWNLOAD_URL: string | null = null;
+const PAPER_ASSET_URL = "/assets/prism-final-paper.pdf";
 
 export function PrismDashboard() {
   const [mounted, setMounted] = useState(false);
@@ -144,6 +145,7 @@ export function PrismDashboard() {
   const [enforcementShift, setEnforcementShift] = useState(1);
   const [spaceStates, setSpaceStates] = useState<string[]>(["AZ", "CA"]);
   const [spacePickerValue, setSpacePickerValue] = useState("");
+  const [paperViewerOpen, setPaperViewerOpen] = useState(false);
 
   const selected = states.find((state) => state.abbrev === selectedState);
   const stateName = selected?.name ?? selectedState;
@@ -258,51 +260,28 @@ export function PrismDashboard() {
                       Find Full Paper Here
                     </p>
                     <p className="mt-1 text-sm leading-6 text-slate-600">
-                      Submitted for review. SSRN paper link will be added after
-                      the review copy is uploaded.
+                      Submitted for review at the SSRN journal.
                     </p>
                   </div>
                   <div className="flex flex-col gap-2 sm:flex-row">
-                    {FULL_PAPER_URL ? (
-                      <a
-                        className={cn(
-                          buttonVariants({ variant: "default" }),
-                          "justify-start",
-                        )}
-                        href={FULL_PAPER_URL}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Access Paper
-                        <ArrowUpRight />
-                      </a>
-                    ) : (
-                      <Button disabled className="justify-start sm:min-w-40">
-                        Access Paper
-                      </Button>
-                    )}
-                    {PAPER_DOWNLOAD_URL ? (
-                      <a
-                        className={cn(
-                          buttonVariants({ variant: "outline" }),
-                          "justify-start bg-white",
-                        )}
-                        href={PAPER_DOWNLOAD_URL}
-                        download
-                      >
-                        <Download />
-                        Download Paper
-                      </a>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        disabled
-                        className="justify-start bg-white sm:min-w-40"
-                      >
-                        <Download />
-                        Download Paper
-                      </Button>
-                    )}
+                    <Button
+                      className="justify-start sm:min-w-40"
+                      onClick={() => setPaperViewerOpen(true)}
+                    >
+                      <FileText />
+                      Access Paper
+                    </Button>
+                    <a
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "justify-start bg-white",
+                      )}
+                      href={PAPER_ASSET_URL}
+                      download="prism-final-paper.pdf"
+                    >
+                      <Download />
+                      Download Paper
+                    </a>
                   </div>
                   <div className="flex flex-col gap-1 text-xs leading-5 text-slate-500 sm:flex-row sm:items-center sm:gap-2">
                     <span>Check out my Google Scholar page for other papers I&apos;ve published.</span>
@@ -1079,6 +1058,91 @@ export function PrismDashboard() {
           </section>
         </section>
       </main>
+      <PaperViewerModal
+        open={paperViewerOpen}
+        onClose={() => setPaperViewerOpen(false)}
+        pdfUrl={PAPER_ASSET_URL}
+      />
+    </div>
+  );
+}
+
+function PaperViewerModal({
+  open,
+  onClose,
+  pdfUrl,
+}: {
+  open: boolean;
+  onClose: () => void;
+  pdfUrl: string;
+}) {
+  if (!open) {
+    return null;
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/58 p-4"
+      onClick={onClose}
+      role="presentation"
+    >
+      <div
+        className="flex h-[min(90vh,56rem)] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border bg-white shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label="PRISM final paper viewer"
+      >
+        <div className="flex items-center justify-between gap-3 border-b px-4 py-3 sm:px-5">
+          <div>
+            <p className="text-base font-semibold text-slate-950">
+              PRISM Final Paper
+            </p>
+            <p className="text-sm text-slate-500">
+              PDF preview with open and print actions.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <a
+              href={pdfUrl}
+              target="_blank"
+              rel="noreferrer"
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "justify-start bg-white",
+              )}
+            >
+              <ExternalLink />
+              PDF
+            </a>
+            <Button
+              variant="outline"
+              className="justify-start bg-white"
+              onClick={() => {
+                const printWindow = window.open(pdfUrl, "_blank");
+
+                window.setTimeout(() => {
+                  printWindow?.focus();
+                  printWindow?.print();
+                }, 900);
+              }}
+            >
+              <Printer />
+              Print
+            </Button>
+            <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close paper viewer">
+              <X />
+            </Button>
+          </div>
+        </div>
+        <div className="flex-1 bg-[#f5f7f6] p-3 sm:p-4">
+          <iframe
+            title="PRISM final paper PDF"
+            src={`${pdfUrl}#toolbar=1&navpanes=0&view=FitH`}
+            className="h-full min-h-[24rem] w-full rounded-lg border bg-white"
+          />
+        </div>
+      </div>
     </div>
   );
 }
