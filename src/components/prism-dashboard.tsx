@@ -963,10 +963,10 @@ export function PrismDashboard() {
               <CardContent>
                 <div className="overflow-hidden rounded-lg border bg-white">
                   <Image
-                    src="/assets/azsef-2026-poster.png"
+                    src="/assets/azsef-2026-poster-display.png"
                     alt="High-resolution poster for PRISM"
-                    width={14400}
-                    height={10800}
+                    width={3600}
+                    height={2700}
                     sizes="(min-width: 1280px) 42vw, 100vw"
                     className="h-auto w-full"
                     priority={false}

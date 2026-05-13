@@ -34,8 +34,9 @@ The dashboard includes curated public assets from the PRISM research package:
 - `public/assets/event-study.png`
 - `public/assets/scenario-deltas.png`
 - `public/assets/azsef-2026-poster.png`
+- `public/assets/azsef-2026-poster-display.png`
 
-![Poster preview](public/assets/azsef-2026-poster.png)
+![Poster preview](public/assets/azsef-2026-poster-display.png)
 
 ## Data Sources
 
