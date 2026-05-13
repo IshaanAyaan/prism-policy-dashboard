@@ -131,6 +131,10 @@ const SPACE_COLORS = [
   "#15803d",
 ];
 const SPACE_BASELINE_YEAR = baselineYears[0] ?? 2023;
+const SCHOLAR_URL =
+  "https://scholar.google.com/citations?user=pV4cNlQAAAAJ&hl=en";
+const FULL_PAPER_URL: string | null = null;
+const PAPER_DOWNLOAD_URL: string | null = null;
 
 export function PrismDashboard() {
   const [mounted, setMounted] = useState(false);
@@ -247,6 +251,73 @@ export function PrismDashboard() {
                 mechanisms, next-year risk forecasts, and the limits of causal
                 interpretation.
               </p>
+              <div className="mt-4 max-w-3xl rounded-xl border bg-[#f8fbfa] p-4">
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-slate-950">
+                      Find Full Paper Here
+                    </p>
+                    <p className="mt-1 text-sm leading-6 text-slate-600">
+                      Submitted for review. SSRN paper link will be added after
+                      the review copy is uploaded.
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    {FULL_PAPER_URL ? (
+                      <a
+                        className={cn(
+                          buttonVariants({ variant: "default" }),
+                          "justify-start",
+                        )}
+                        href={FULL_PAPER_URL}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        Access Paper
+                        <ArrowUpRight />
+                      </a>
+                    ) : (
+                      <Button disabled className="justify-start sm:min-w-40">
+                        Access Paper
+                      </Button>
+                    )}
+                    {PAPER_DOWNLOAD_URL ? (
+                      <a
+                        className={cn(
+                          buttonVariants({ variant: "outline" }),
+                          "justify-start bg-white",
+                        )}
+                        href={PAPER_DOWNLOAD_URL}
+                        download
+                      >
+                        <Download />
+                        Download Paper
+                      </a>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        disabled
+                        className="justify-start bg-white sm:min-w-40"
+                      >
+                        <Download />
+                        Download Paper
+                      </Button>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1 text-xs leading-5 text-slate-500 sm:flex-row sm:items-center sm:gap-2">
+                    <span>Check out my Google Scholar page for other papers I&apos;ve published.</span>
+                    <a
+                      href={SCHOLAR_URL}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1 font-medium text-primary hover:underline"
+                    >
+                      Google Scholar
+                      <ExternalLink className="size-3.5" />
+                    </a>
+                  </div>
+                </div>
+              </div>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row lg:flex-col xl:flex-row">
               <a
@@ -871,9 +942,9 @@ export function PrismDashboard() {
               <CardHeader className="gap-3">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <CardTitle className="text-xl">Poster Preview</CardTitle>
+                    <CardTitle className="text-xl">Poster</CardTitle>
                     <CardDescription>
-                      Curated from the project poster artifact for presentation use.
+                      High-resolution conference poster artifact for presentation and download.
                     </CardDescription>
                   </div>
                   <a
@@ -881,21 +952,22 @@ export function PrismDashboard() {
                       buttonVariants({ variant: "outline" }),
                       "justify-start bg-white",
                     )}
-                    href="/assets/azsef-poster-preview.jpg"
-                    download="prism-poster-preview.jpg"
+                    href="/assets/azsef-2026-poster.png"
+                    download="azsef-2026-poster.png"
                   >
                     <Download />
-                    Download Image
+                    Download Poster
                   </a>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="overflow-hidden rounded-lg border bg-white">
                   <Image
-                    src="/assets/azsef-poster-preview.jpg"
-                    alt="Poster preview for PRISM"
-                    width={1800}
-                    height={1350}
+                    src="/assets/azsef-2026-poster.png"
+                    alt="High-resolution poster for PRISM"
+                    width={14400}
+                    height={10800}
+                    sizes="(min-width: 1280px) 42vw, 100vw"
                     className="h-auto w-full"
                     priority={false}
                   />
