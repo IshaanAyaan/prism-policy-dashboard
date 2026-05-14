@@ -136,6 +136,7 @@ const SPACE_BASELINE_YEAR = baselineYears[0] ?? 2023;
 const SCHOLAR_URL =
   "https://scholar.google.com/citations?user=pV4cNlQAAAAJ&hl=en";
 const PAPER_ASSET_URL = "/assets/prism-final-paper.pdf";
+const SSRN_DOI_URL = "https://dx.doi.org/10.2139/ssrn.6756239";
 
 export function PrismDashboard() {
   const [mounted, setMounted] = useState(false);
@@ -260,7 +261,8 @@ export function PrismDashboard() {
                       Find Full Paper Here
                     </p>
                     <p className="mt-1 text-sm leading-6 text-slate-600">
-                      Submitted for review at the SSRN journal.
+                      Published to SSRN Electronic Journal. Official DOI page
+                      available below.
                     </p>
                   </div>
                   <div className="flex flex-col gap-2 sm:flex-row">
@@ -282,8 +284,21 @@ export function PrismDashboard() {
                       <Download />
                       Download Paper
                     </a>
+                    <a
+                      className={cn(
+                        buttonVariants({ variant: "outline" }),
+                        "justify-start bg-white",
+                      )}
+                      href={SSRN_DOI_URL}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      <ExternalLink />
+                      Official SSRN Page
+                    </a>
                   </div>
                   <div className="flex flex-col gap-1 text-xs leading-5 text-slate-500 sm:flex-row sm:items-center sm:gap-2">
+                    <span>Venue: SSRN Electronic Journal.</span>
                     <span>Check out my Google Scholar page for other papers I&apos;ve published.</span>
                     <a
                       href={SCHOLAR_URL}
